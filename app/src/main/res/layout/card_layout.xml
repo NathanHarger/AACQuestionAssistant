@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:bottomLeftRadius="6dp"
+    android:bottomRightRadius="6dp"
+    android:isScrollContainer="false"
+    android:tag="cv"
+    android:theme="@style/Widget.MaterialComponents.CardView"
+    android:topLeftRadius="6dp"
+    android:topRightRadius="6dp"
+    app:cardBackgroundColor="@color/cardColor"
+    app:cardCornerRadius="6dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contraintLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingLeft="4dp"
+        android:paddingEnd="4dp"
+        android:paddingRight="4dp">
+
+
+        <ImageView
+            android:id="@+id/imageView"
+
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_margin="4dp"
+
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:clickable="false"
+            android:contentDescription="TODO"
+            android:cropToPadding="true"
+            android:scaleType="centerCrop"
+            android:tag="image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:tag="name"
+            android:text="Card"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
