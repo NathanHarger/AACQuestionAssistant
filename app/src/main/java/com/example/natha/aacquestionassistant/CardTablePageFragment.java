@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,11 +32,10 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 public class CardTablePageFragment extends Fragment {
     static final int SELECT_IMAGE_REQUEST = 1;
-    List<Card> cards = new LinkedList<Card>();
+    List<Card> cards = new LinkedList<>();
     CardRecyclerViewAdapter adapter;
     int clickedCardIndex = 0;
     Parcelable recyclerViewState;
-    private SelectionTracker mSelectionTracker;
     private ItemTouchHelper itemTouchHelper;
     private boolean locked = false;
     @Override
@@ -49,7 +50,7 @@ public class CardTablePageFragment extends Fragment {
         }
 
         final View view = inflater.inflate(R.layout.activity_main, container, false);
-        final RecyclerView rv = (RecyclerView) view.findViewById(R.id.cardGrid);
+        final RecyclerView rv = view.findViewById(R.id.cardGrid);
 
         //Move this up to main actvity
         ImageDatabaseHelper.getInstance(this.getContext());
@@ -57,34 +58,40 @@ public class CardTablePageFragment extends Fragment {
         adapter = new CardRecyclerViewAdapter(cards, new CustomItemClickListener() {
 
 
+            //MOVE the selection to ondown
             @Override
             public void onItemClick(View v, int position) {
-                Card c = cards.get(position);
-                mSelectionTracker.select(c.key);
 
+                Card c = cards.get(position);
+                long keyLastClick = adapter.getSelection();
+                if(keyLastClick != 0L ){
+
+                    adapter.setSelected(keyLastClick, false );
+                    adapter.stopDrag(keyLastClick);
+
+                }
+
+
+                adapter.setSelected(c.key, true);
                 Log.d("adf", "clicked position:" + position);
-                if (v.getTag().equals("cv")) {
-                    if(!c.label.equals("")) {
-                       // mSelectionTracker.select(c.key);
+                if (v.getTag().equals("cv") && !c.label.equals("") && locked) {
                         TextToSpeechManager.speak(c.label);
-                    }
-                } else if (!locked) {
+
+                } else if (v.getTag().equals("edit") && !locked ) {
 
                     clickedCardIndex = position;
                     Intent i = new Intent(v.getContext(), ImageSelectionActivity.class);
                     ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, 0, 0);
                     startActivityForResult(i, SELECT_IMAGE_REQUEST, options.toBundle());
-                    adapter.stopActionMode();
 
-
-                } else {
+                } else if(locked){
                     Toast.makeText(v.getContext(), "Card Edit Locked Out", Toast.LENGTH_SHORT).show();
                 }
             }
 
-        }, rv);
+        }, rv, getContext());
 
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, this.getContext());
+        final ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, this.getContext());
 
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
 
@@ -101,70 +108,20 @@ public class CardTablePageFragment extends Fragment {
             rv.setLayoutManager(new GridLayoutManager(this.getContext(), 3));
         }
 
-        TextToSpeechManager.initTextToSpeech(view.getContext());
+        TextToSpeechManager.initTextToSpeech(getContext());
 
         rv.setAdapter(adapter);
-
-
-        mSelectionTracker = new SelectionTracker.Builder<>(
-                "string-items-selection", rv, new CardItemKeyProvider(1, cards), new CardItemDetailsLookup(rv), StorageStrategy.createLongStorage()).withSelectionPredicate(SelectionPredicates.<Long>createSelectSingleAnything()).build();
-
-        mSelectionTracker.addObserver(new SelectionTracker.SelectionObserver() {
-            @Override
-            public void onItemStateChanged(@NonNull Object key, boolean selected) {
-
-                super.onItemStateChanged(key, selected);
-                Log.i("ItemStateChanged", "" + key + " to " + selected);
-
-                adapter.setSelected((long) key, selected);
-                if(!adapter.actionModeActive()){
-
-
-                    return;
-                }
-
-                if(selected){
-                    adapter.startDrag((long)key);
-
-                } else {
-                    adapter.stopDrag((long) key);
-
-                }
-
-
-            }
-
-            @Override
-            public void onSelectionRefresh() {
-                super.onSelectionRefresh();
-                Log.i("Selection: ", "onSelectionRefresh()");
-
-            }
-
-            @Override
-            public void onSelectionChanged() {
-                super.onSelectionChanged();
-                Log.i("Selection: ", "onSelectionChanged()");
-
-            }
-
-            @Override
-            public void onSelectionRestored() {
-                super.onSelectionRestored();
-            }
-        });
-
-        adapter.setSelectionTracker(mSelectionTracker);
 
         touchHelper.attachToRecyclerView(rv);
         adapter.setTouchHelper(touchHelper);
         adapter.setTouchHelperCallback((SimpleItemTouchHelperCallback) callback);
-        ((CardFragmentActivity)getActivity()).setBottomappbarCallbackInterface(new BottomappbarCallbackInterface() {
+
+        BottomappbarCallbackInterface bottomappbarCallbackInterface = new BottomappbarCallbackInterface() {
             @Override
             public void addButtonClick() {
 
 
-                if(!locked && !adapter.actionModeActive()){
+                if(!locked){
                     adapter.addItem(new Card("",""));
                 } else{
                     Toast.makeText(getContext(), "Add Card Locked Out", Toast.LENGTH_SHORT).show();
@@ -175,9 +132,26 @@ public class CardTablePageFragment extends Fragment {
             public void toggleUiLockClick(){
                 locked = !locked;
                 adapter.setLocked(locked);
+
+                if(locked)
+                    adapter.clearSelection();
                 Log.i("Bottom bar navigation:","" + (locked?"locked":"unlocked" ));
             }
-        });
+
+            public void menuClick(int id){
+                if(!locked) {
+                    adapter.menuClick(id);
+                } else{
+                    Toast.makeText(getContext(), "Locked Out", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        };
+
+
+
+
+        ((CardFragmentActivity)getActivity()).setBottomappbarCallbackInterface(bottomappbarCallbackInterface);
 
         if (cards.size() == 0) {
 
@@ -204,6 +178,8 @@ public class CardTablePageFragment extends Fragment {
                 if (data.hasExtra("name")) {
                     String returnValue = data.getStringExtra("name");
                     String returnImage = data.getStringExtra("filename");
+                    int resourceLocation = data.getIntExtra("resourceLocation",0);
+
                     if (returnImage.equals("") || returnValue.equals("")) {
                         adapter.setItemTag(clickedCardIndex, "cv");
                         return;
@@ -211,7 +187,7 @@ public class CardTablePageFragment extends Fragment {
                     String label = returnValue.replace("_", " ");
                     label = label.replaceAll("[0-9]", "");
 
-                    adapter.updateItem(clickedCardIndex, label, returnImage);
+                    adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation);
                 } else {
                     adapter.setItemTag(clickedCardIndex, "cv");
                 }
@@ -219,4 +195,3 @@ public class CardTablePageFragment extends Fragment {
         }
     }
 }
-

@@ -20,14 +20,13 @@ import static android.content.ContentValues.TAG;
 public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "imageDatabase";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
     private static final String TABLE_IMAGES = "images";
     private static final String KEY_IMAGE_ID = "id";
     private static final String KEY_IMAGE_FILE_LOC_ID = "fileID";
+    private static final String KEY_IMAGE_LOCATION = "imageLoc";
     private static final String KEY_IMAGE_SYMBOL = "symbol";
     private static final String KEY_IMAGE_GRAMMAR = "grammar";
-    private static final String KEY_IMAGE_CATEGORY = "category";
-    private static final String KEY_IMAGE_TAGS = "tags";
     public static String DB_FILEPATH = "/data/data/com.example.natha.aacquestionassistant/databases/imageDatabase";
     private static ImageDatabaseHelper sInstance;
     SQLiteDatabase db;
@@ -111,18 +110,21 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void searchImages(String searchQuery, List<String> result) {
+    public void searchImages(String searchQuery, List<FileInfo> result) {
 
 
 
         String query = "";
+        if(searchQuery.length() == 0){
+           return;
+        }
         if(searchQuery.length() == 1){
-            query = "SELECT symbol FROM images WHERE symbol = " + "'"+searchQuery+"'" +
+            query = "SELECT * FROM images WHERE symbol = " + "'"+searchQuery+"'" +
                             " OR symbol = "  + "'"+(searchQuery + "_lower_case")+ "'";
         } else{
             query =
-            String.format("SELECT %s FROM %s WHERE %s LIKE '%s%%'",
-                    KEY_IMAGE_SYMBOL, TABLE_IMAGES, KEY_IMAGE_SYMBOL, searchQuery, KEY_IMAGE_GRAMMAR);
+            String.format("SELECT * FROM %s WHERE %s LIKE '%%%s%%'",
+                     TABLE_IMAGES, KEY_IMAGE_SYMBOL, searchQuery, KEY_IMAGE_GRAMMAR);
         }
         Cursor c = db.rawQuery(query, null);
 
@@ -133,7 +135,8 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
             //int count = 0;
             if (c.moveToFirst()) {
                 do {
-                    result.add(c.getString(0));
+
+                    result.add(new FileInfo(c.getInt(1),c.getString(2),c.getInt(3)));
                     // count++;
                     //if(count > 15){
                     //     break;
@@ -162,10 +165,10 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
                 KEY_IMAGE_ID + " INTEGER PRIMARY KEY," + // Define a primary key
                 KEY_IMAGE_FILE_LOC_ID + " INTEGER," +
                 KEY_IMAGE_SYMBOL + " TEXT," +
-                KEY_IMAGE_GRAMMAR + " TEXT," +
-                KEY_IMAGE_CATEGORY + " TEXT," +
-                KEY_IMAGE_TAGS + " TEXT" +
+
+                KEY_IMAGE_LOCATION + " INTEGER " +
                 ")";
+
         db.execSQL(CREATE_IMAGE_TABLE);
     }
 
@@ -176,9 +179,8 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(KEY_IMAGE_FILE_LOC_ID, i.id);
             values.put(KEY_IMAGE_SYMBOL, i.symbol);
-            values.put(KEY_IMAGE_GRAMMAR, i.grammar);
-            values.put(KEY_IMAGE_CATEGORY, i.category);
-            values.put(KEY_IMAGE_TAGS, i.tags);
+            values.put(KEY_IMAGE_LOCATION, i.imageLocation);
+
 
             db.insertOrThrow(TABLE_IMAGES, null, values);
             db.setTransactionSuccessful();

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,7 @@ import static android.content.res.AssetManager.ACCESS_STREAMING;
 
 public class ImageSelectionActivity extends AppCompatActivity {
     final boolean BUILD_FROM_FILE = true;
-    List<String> images = new LinkedList<String>();
+    List<FileInfo> images = new LinkedList<FileInfo>();
     ImageSelectionRecyclerViewAdapter adapter;
     ImageDatabaseHelper idh;
 
@@ -70,9 +71,11 @@ public class ImageSelectionActivity extends AppCompatActivity {
                 }
                 String searchQuery = s.toString().replaceAll(" ", "_");
                 Log.d("Image Selection: ", "field changed");
-                List<String> r = new LinkedList<>();
+                List<FileInfo> r = new LinkedList<>();
                 idh.searchImages(searchQuery, r);//, preFetch);
+
                 adapter.submitList(r);
+
             }
 
             @Override
@@ -89,6 +92,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
         String split = ",";
         BufferedReader b = null;
         try {
+            // read in core vocab
             InputStream s = getAssets().open("symbol-info.csv", ACCESS_STREAMING);
             b = new BufferedReader(new InputStreamReader(s));
 
@@ -97,6 +101,9 @@ public class ImageSelectionActivity extends AppCompatActivity {
             while ((line = b.readLine()) != null) {
                 idh.addImage(new FileInfo(line.split(split)));
             }
+
+            // read in custom vocab
+            FileOperations.readNewVocab(getApplicationContext() , idh);
         } catch (FileNotFoundException e) {
             Log.e("CSV parsing: ", String.valueOf(e.getStackTrace()));
         } catch (IOException e) {
@@ -113,11 +120,14 @@ public class ImageSelectionActivity extends AppCompatActivity {
     }
 
     public void submit_photo(int position) {
+        FileInfo curr = adapter.getItem(position);
+        String i = curr.symbol;
 
-        String i = adapter.getItem(position);
         Intent output = new Intent();
         output.putExtra("name", i);
         output.putExtra("filename", i);
+        output.putExtra("resourceLocation", curr.imageLocation);
+
         setResult(Activity.RESULT_OK, output);
         finish();
     }

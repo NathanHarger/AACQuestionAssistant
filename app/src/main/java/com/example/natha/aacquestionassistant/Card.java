@@ -18,12 +18,14 @@ public class Card implements Parcelable {
     String photoId;
     long key;
     boolean isSelected;
+    int resourceLocation;
 
     Card(String label, String photoId) {
         this.key = this.hashCode();
         this.label = label;
         this.photoId = photoId;
         this.isSelected = false;
+
     }
 
     public Card(Parcel in) {

@@ -87,8 +87,7 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
                     (CardRecyclerViewAdapter.CardViewHolder) viewHolder;
 
 
-
-                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isCurrentlyActive) {
+                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && isCurrentlyActive ) {
 
                     Resources r = context.getResources();
                     Resources.Theme theme = context.getTheme();
@@ -116,10 +115,10 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback{
 
 
 
-        CardRecyclerViewAdapter crva = (CardRecyclerViewAdapter) recyclerView.getAdapter();
+        //CardRecyclerViewAdapter crva = (CardRecyclerViewAdapter) recyclerView.getAdapter();
 
-        crva.stopActionMode();
-
+        //crva.stopActionMode();
+//
         mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
 
         return true;

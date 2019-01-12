@@ -2,6 +2,7 @@ package com.example.natha.aacquestionassistant;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.LinkedList;
 import java.util.List;
 
+import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
@@ -34,7 +36,12 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.main);
+
+        BottomAppBar bab = findViewById(R.id.bottomAppBar);
+        bab.replaceMenu(R.menu.contextual_menu);
+
         fragments = new LinkedList<Fragment>();
+
         //initialsie the pager
         this.initialisePaging();
     }
@@ -45,6 +52,10 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
     public void setBottomappbarCallbackInterface(final BottomappbarCallbackInterface listener){
         bottomappbarCallbackInterface = listener;
         final FloatingActionButton fab = findViewById(R.id.add_card_fab);
+        final ActionMenuItemView  newItemCreate = findViewById(R.id.new_item_create);
+        final ActionMenuItemView  itemEdit = findViewById(R.id.item_edit);
+        final ActionMenuItemView itemDelete = findViewById(R.id.item_delete);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,9 +70,29 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
                 locked = !locked;
 
                 bottomAppBar.setNavigationIcon(locked ? R.drawable.ic_lock_outline_black_24dp : R.drawable.ic_lock_open_black_24dp);
-
+                bottomAppBar.getNavigationIcon().setAlpha(locked ? 158:255);
                 fab.setAlpha(locked? .5f:1f);
+                newItemCreate.setAlpha(locked? .5f:1f);
+                itemEdit.setAlpha(locked? .5f:1f);
+                itemDelete.setAlpha(locked? .5f:1f);
+
+
+
                 listener.toggleUiLockClick();
+
+
+            }
+        });
+
+        bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+
+                listener.menuClick(item.getItemId());
+
+
+                return false;
             }
         });
 
@@ -85,7 +116,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         fragments.add(Fragment.instantiate(this, YesNoPageFragment.class.getName()));
         this.pagerAdapter = new CardPagerAdapter(super.getSupportFragmentManager(), fragments);
         //
-        ViewPager pager = (ViewPager) super.findViewById(R.id.viewpager);
+        ViewPager pager = super.findViewById(R.id.viewpager);
         //TabLayout tabLayout = findViewById(R.id.tabDots);
         //tabLayout.setupWithViewPager(pager, true);
         pager.setAdapter(this.pagerAdapter);

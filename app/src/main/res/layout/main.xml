@@ -34,10 +34,12 @@
             android:layout_gravity="bottom"
             app:backgroundTint="@color/colorPrimary"
             app:buttonGravity="bottom|top"
+            app:fabAlignmentMode="end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:navigationIcon="@drawable/ic_lock_open_black_24dp"
+
             />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -48,8 +50,10 @@
             app:backgroundTint="@color/colorAccent"
             app:fabSize="normal"
             app:layout_anchor="@id/bottomAppBar"
-            tools:layout_editor_absoluteX="177dp"
-            tools:layout_editor_absoluteY="659dp" />
+
+
+            />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
