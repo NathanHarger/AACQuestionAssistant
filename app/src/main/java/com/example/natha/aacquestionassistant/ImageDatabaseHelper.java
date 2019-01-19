@@ -1,5 +1,6 @@
 package com.example.natha.aacquestionassistant;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,7 +21,7 @@ import static android.content.ContentValues.TAG;
 public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "imageDatabase";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String TABLE_IMAGES = "images";
     private static final String KEY_IMAGE_ID = "id";
     private static final String KEY_IMAGE_FILE_LOC_ID = "fileID";
@@ -28,7 +29,8 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_IMAGE_SYMBOL = "symbol";
     private static final String KEY_VOCAB_PRONUNCIATION = "pronunciation";
     private static final String KEY_IMAGE_GRAMMAR = "grammar";
-    public static String DB_FILEPATH = "/data/data/com.example.natha.aacquestionassistant/databases/imageDatabase";
+    @SuppressLint("SdCardPath")
+    private static String DB_FILEPATH ="/data/data/com.example.natha.aacquestionassistant/databases/imageDatabase";
     private static ImageDatabaseHelper sInstance;
     private SQLiteDatabase db;
 
@@ -37,7 +39,7 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         db = getReadableDatabase();
     }
 
-    public static ImageDatabaseHelper getInstance(Context context) {
+    static ImageDatabaseHelper getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new ImageDatabaseHelper(context.getApplicationContext());
         }
@@ -68,7 +70,7 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public int getSize() {
+    int getSize() {
         //SELECT COUNT(*) FROM IMAGES
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(String.format("SELECT COUNT(*) FROM %s", TABLE_IMAGES), null);
@@ -90,9 +92,8 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getReadableDatabase();
         db.beginTransaction();
-        Cursor c = db.rawQuery(query, null);
 
-        try {
+        try (Cursor c = db.rawQuery(query, null)) {
             if (c.moveToFirst()) {
                 do {
                     result.add(c.getString(0));
@@ -104,18 +105,17 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
 
-            c.close();
         }
         return result;
 
 
     }
 
-    public void searchImages(String searchQuery, List<Card> result) {
+    void searchImages(String searchQuery, List<Card> result) {
 
 
 
-        String query = "";
+        String query;
         if(searchQuery.length() == 0){
            return;
         }
@@ -127,17 +127,15 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
             String.format("SELECT * FROM %s WHERE %s LIKE '%%%s%%'",
                      TABLE_IMAGES, KEY_IMAGE_SYMBOL, searchQuery, KEY_IMAGE_GRAMMAR);
         }
-        Cursor c = db.rawQuery(query, null);
-
-        db.beginTransaction();
 
 
-        try {
+        try (Cursor c = db.rawQuery(query, null)) {
+            db.beginTransaction();
             //int count = 0;
             if (c.moveToFirst()) {
                 do {
 
-                    result.add(new Card(c.getInt(1),c.getString(2),c.getInt(3),c.getString(4)));
+                    result.add(new Card(c.getInt(1), c.getString(2), c.getInt(3), c.getString(4)));
                     // count++;
                     //if(count > 15){
                     //     break;
@@ -148,7 +146,6 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
             Log.d(TAG, "Error while trying to get images from database");
 
         } finally {
-            c.close();
             db.endTransaction();
         }
     }
@@ -174,7 +171,7 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_IMAGE_TABLE);
     }
 
-    public void addImage(Card i) {
+    void addImage(Card i) {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {

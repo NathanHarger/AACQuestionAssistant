@@ -13,6 +13,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
@@ -40,7 +41,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         BottomAppBar bab = findViewById(R.id.bottomAppBar);
         bab.replaceMenu(R.menu.contextual_menu);
 
-        fragments = new LinkedList<Fragment>();
+        fragments = new LinkedList<>();
 
         //initialsie the pager
         this.initialisePaging();
@@ -70,7 +71,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
                 locked = !locked;
 
                 bottomAppBar.setNavigationIcon(locked ? R.drawable.ic_lock_outline_black_24dp : R.drawable.ic_lock_open_black_24dp);
-                bottomAppBar.getNavigationIcon().setAlpha(locked ? 158:255);
+                Objects.requireNonNull(bottomAppBar.getNavigationIcon()).setAlpha(locked ? 158:255);
                 fab.setAlpha(locked? .5f:1f);
                 newItemCreate.setAlpha(locked? .5f:1f);
                 itemEdit.setAlpha(locked? .5f:1f);
@@ -113,12 +114,15 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
 
         fragments.add(Fragment.instantiate(this, CardTablePageFragment.class.getName()));
+
         fragments.add(Fragment.instantiate(this, YesNoPageFragment.class.getName()));
         this.pagerAdapter = new CardPagerAdapter(super.getSupportFragmentManager(), fragments);
         //
         ViewPager pager = super.findViewById(R.id.viewpager);
         //TabLayout tabLayout = findViewById(R.id.tabDots);
+
         //tabLayout.setupWithViewPager(pager, true);
+
         pager.setAdapter(this.pagerAdapter);
 
 

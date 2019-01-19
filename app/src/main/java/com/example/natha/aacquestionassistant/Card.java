@@ -3,6 +3,8 @@ package com.example.natha.aacquestionassistant;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 public class Card implements Parcelable {
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Card createFromParcel(Parcel in) {
@@ -81,9 +83,14 @@ public class Card implements Parcelable {
         this.id = id;
         label = values[0];
         resourceLocation =Integer.parseInt(values[1]);
-        pronunciation = values[2];
+        if(values.length == 3) {
+            pronunciation = values[2];
+        } else{
+            pronunciation = "";
+        }
     }
 
+    @NonNull
     public String toString() {
         return "Card{" +
                 "key='" + key + '\'' +

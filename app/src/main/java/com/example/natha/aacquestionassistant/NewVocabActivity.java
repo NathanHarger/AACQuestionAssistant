@@ -73,7 +73,8 @@ private Bitmap selectedImage;
          newDialog = new PronunciationDialogFragment();
          EditText editText = findViewById(R.id.editText2);
          Bundle b = new Bundle();
-         b.putString("vocab", editText.getText().toString());
+
+         b.putString("vocab", pronunciation.equals("") ? editText.getText().toString(): pronunciation);
          newDialog.setArguments(b);
         newDialog.show(getSupportFragmentManager(),"test");
     }
@@ -84,7 +85,7 @@ private Bitmap selectedImage;
             TextToSpeechManager.speak(editText.getText());
         }
     }
-    private String pronunciation;
+    private String pronunciation ="";
     public void submitPronunciationDialog(View v){
         int id = v.getId();
 

@@ -44,12 +44,12 @@ import androidx.viewpager.widget.ViewPager;
 
 public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CardRecyclerViewAdapter.CardViewHolder> implements ItemTouchHelperAdapter {
 
-    protected RecyclerView rv;
-    protected List<Card> cards;
+    private RecyclerView rv;
+    private List<Card> cards;
     private ItemTouchHelper ith;
     private CustomItemClickListener listener;
     private Context context;
-    public void menuClick(int id){
+    void menuClick(int id){
         long key = getSelection();
 
         if(key != 0L){
@@ -69,7 +69,9 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
 
                 listener.onItemClick(v.cv, cards.indexOf(clickedCard));
             }
-        } else if (id == R.id.new_item_create){
+        }
+
+        if (id == R.id.new_item_create){
 
             Intent createVocabIntent = new Intent(context, NewVocabActivity.class);
 
@@ -80,7 +82,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     public boolean getLocked(){
         return locked;
     }
-    public long getSelection(){
+    long getSelection(){
         for (Card c : cards) {
             if(c.isSelected){
                 return c.key;
@@ -94,7 +96,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         ith.startDrag(v);
     }
 
-    public void  stopDrag(long key) {
+    void  stopDrag(long key) {
         CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForItemId(key);
         simpleItemTouchHelperCallback.clearView(rv,v);
     }
@@ -108,16 +110,16 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
 
     }
 
-    public void setTouchHelper(ItemTouchHelper ith) {
+    void setTouchHelper(ItemTouchHelper ith) {
         this.ith = ith;
     }
 
-    SimpleItemTouchHelperCallback simpleItemTouchHelperCallback;
-    public void setTouchHelperCallback(SimpleItemTouchHelperCallback simpleItemTouchHelperCallback){
+    private SimpleItemTouchHelperCallback simpleItemTouchHelperCallback;
+    void setTouchHelperCallback(SimpleItemTouchHelperCallback simpleItemTouchHelperCallback){
         this.simpleItemTouchHelperCallback = simpleItemTouchHelperCallback;
     }
 
-    public void addItem(Card c) {
+    void addItem(Card c) {
         cards.add(c);
         this.notifyDataSetChanged();
         long key = getSelection();
@@ -125,7 +127,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         rv.smoothScrollToPosition(cards.size()-1);
     }
 
-    public Card getItem(long key) {
+    private Card getItem(long key) {
         for (Card c : cards) {
             if (c.key == key) {
                 return c;
@@ -134,7 +136,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         return null;
     }
 
-    public RecyclerView.LayoutManager getLayoutManager() {
+    RecyclerView.LayoutManager getLayoutManager() {
         return rv.getLayoutManager();
     }
 
@@ -147,7 +149,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
-    public void clearSelection() {
+    void clearSelection() {
 
         long key = getSelection();
 
@@ -157,7 +159,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
-    public void deleteSelected() {
+    private void deleteSelected() {
 
         Iterator i = cards.iterator();
         Card c = null;
@@ -176,7 +178,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
-    public void setSelected(long id, boolean selected) {
+    void setSelected(long id, boolean selected) {
 
         for (int i = 0; i < cards.size(); i++) {
             Card curr = cards.get(i);
@@ -202,7 +204,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
-    public void updateItem(int position, String label, String file, int resourceLocation,String pronunciation) {
+    void updateItem(int position, String label, String file, int resourceLocation, String pronunciation) {
         Card item = cards.get(position);
         item.label = label;
         item.photoId = file;
@@ -211,9 +213,10 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         this.notifyItemChanged(position);
     }
 
-    public void setItemTag(int position, String tag) {
+    void setItemTag(int position, String tag) {
 
         CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForAdapterPosition(position);
+        if (v == null) throw new AssertionError();
         v.cv.setTag(tag);
     }
 
@@ -221,7 +224,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         return cards.size();
     }
 
-    public void setLocked(boolean locked){
+    void setLocked(boolean locked){
 
         this.locked = locked;
 
@@ -231,7 +234,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
@@ -309,7 +312,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     }
 
 
-    public void onBindViewHolder(final CardViewHolder cardViewHolder, int i) {
+    public void onBindViewHolder(@NonNull final CardViewHolder cardViewHolder, int i) {
 
         cardViewHolder.label.setText(cards.get(i).label);
 
@@ -355,7 +358,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         return true;
     }
 
-    public class CardViewHolder extends RecyclerView.ViewHolder {
+    class CardViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView label;
         ImageView image;
