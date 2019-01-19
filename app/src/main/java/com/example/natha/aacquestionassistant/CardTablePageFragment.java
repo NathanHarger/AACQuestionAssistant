@@ -75,8 +75,12 @@ public class CardTablePageFragment extends Fragment {
                 adapter.setSelected(c.key, true);
                 Log.d("adf", "clicked position:" + position);
                 if (v.getTag().equals("cv") && !c.label.equals("") && locked) {
+                    if(c.pronunciation.length() == 0) {
                         TextToSpeechManager.speak(c.label);
+                    } else{
+                        TextToSpeechManager.speak(c.pronunciation);
 
+                    }
                 } else if (v.getTag().equals("edit") && !locked ) {
 
                     clickedCardIndex = position;
@@ -179,7 +183,7 @@ public class CardTablePageFragment extends Fragment {
                     String returnValue = data.getStringExtra("name");
                     String returnImage = data.getStringExtra("filename");
                     int resourceLocation = data.getIntExtra("resourceLocation",0);
-
+                    String pronunciation = data.getStringExtra("pronunciation");
                     if (returnImage.equals("") || returnValue.equals("")) {
                         adapter.setItemTag(clickedCardIndex, "cv");
                         return;
@@ -187,7 +191,7 @@ public class CardTablePageFragment extends Fragment {
                     String label = returnValue.replace("_", " ");
                     label = label.replaceAll("[0-9]", "");
 
-                    adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation);
+                    adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation,pronunciation);
                 } else {
                     adapter.setItemTag(clickedCardIndex, "cv");
                 }

@@ -26,7 +26,7 @@ import static android.content.res.AssetManager.ACCESS_STREAMING;
 
 public class ImageSelectionActivity extends AppCompatActivity {
     final boolean BUILD_FROM_FILE = true;
-    List<FileInfo> images = new LinkedList<FileInfo>();
+    List<Card> images = new LinkedList<>();
     ImageSelectionRecyclerViewAdapter adapter;
     ImageDatabaseHelper idh;
 
@@ -71,7 +71,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
                 }
                 String searchQuery = s.toString().replaceAll(" ", "_");
                 Log.d("Image Selection: ", "field changed");
-                List<FileInfo> r = new LinkedList<>();
+                List<Card> r = new LinkedList<>();
                 idh.searchImages(searchQuery, r);//, preFetch);
 
                 adapter.submitList(r);
@@ -99,7 +99,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
             // read header
             b.readLine();
             while ((line = b.readLine()) != null) {
-                idh.addImage(new FileInfo(line.split(split)));
+                idh.addImage(new Card(line.split(split)));
             }
 
             // read in custom vocab
@@ -120,14 +120,14 @@ public class ImageSelectionActivity extends AppCompatActivity {
     }
 
     public void submit_photo(int position) {
-        FileInfo curr = adapter.getItem(position);
-        String i = curr.symbol;
+        Card curr = adapter.getItem(position);
+        String i = curr.label;
 
         Intent output = new Intent();
         output.putExtra("name", i);
         output.putExtra("filename", i);
-        output.putExtra("resourceLocation", curr.imageLocation);
-
+        output.putExtra("resourceLocation", curr.resourceLocation);
+        output.putExtra("pronunciation", curr.pronunciation);
         setResult(Activity.RESULT_OK, output);
         finish();
     }

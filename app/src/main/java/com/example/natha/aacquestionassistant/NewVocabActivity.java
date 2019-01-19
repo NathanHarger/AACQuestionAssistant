@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import static android.content.res.AssetManager.ACCESS_STREAMING;
 
@@ -62,13 +64,38 @@ private Bitmap selectedImage;
 
         String filename = word.getText().toString().replace(" ", "_");
         FileOperations.writeNewVocabToSymbolInfo(getApplicationContext(),
-                new FileInfo( idh.getSize() +1 , filename, 1), selectedImage);
+                new Card( idh.getSize() +1 , filename, 1,pronunciation), selectedImage);
 
         finish();
     }
+    private PronunciationDialogFragment newDialog;
+    public void editPronunciation(View v){
+         newDialog = new PronunciationDialogFragment();
+         EditText editText = findViewById(R.id.editText2);
+         Bundle b = new Bundle();
+         b.putString("vocab", editText.getText().toString());
+         newDialog.setArguments(b);
+        newDialog.show(getSupportFragmentManager(),"test");
+    }
 
+    public void previewPronunciation(View v){
+        EditText editText = ((ConstraintLayout)v.getParent()).findViewById(R.id.pronunciation);
+        if(editText.getText().length() > 0) {
+            TextToSpeechManager.speak(editText.getText());
+        }
+    }
+    private String pronunciation;
+    public void submitPronunciationDialog(View v){
+        int id = v.getId();
 
+        if(id == R.id.ok){
+            pronunciation = ((EditText)
+                    ((ConstraintLayout)v.getParent())
+                            .findViewById(R.id.pronunciation)).getText().toString();
+        }
+        newDialog.dismiss();
 
+    }
 
     @Override
     public void onPickResult(final PickResult r){
@@ -85,4 +112,6 @@ private Bitmap selectedImage;
         pickImageDialog.dismiss();
 
     }
+
+
 }

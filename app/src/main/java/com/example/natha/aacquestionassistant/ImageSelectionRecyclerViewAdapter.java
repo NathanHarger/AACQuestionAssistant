@@ -17,34 +17,34 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<ImageSelectionRecyclerViewAdapter.CardViewHolder> {
-    public static final DiffUtil.ItemCallback<FileInfo> DIFF_CALLBACK
-            = new DiffUtil.ItemCallback<FileInfo>() {
+    public static final DiffUtil.ItemCallback<Card> DIFF_CALLBACK
+            = new DiffUtil.ItemCallback<Card>() {
         @Override
         public boolean areItemsTheSame(
-                @NonNull FileInfo oldUser, @NonNull FileInfo newUser) {
+                @NonNull Card oldUser, @NonNull Card newUser) {
             // User properties may have changed if reloaded from the DB, but ID is fixed
-            return oldUser.id == newUser.id;
+            return oldUser.key == newUser.key;
         }
 
         @Override
         public boolean areContentsTheSame(
-                @NonNull FileInfo oldUser, @NonNull FileInfo newUser) {
+                @NonNull Card oldUser, @NonNull Card newUser) {
             // NOTE: if you use equals, your object must properly override Object#equals()
             // Incorrectly returning false here will result in too many animations.
-            return oldUser.id == (newUser.id);
+            return oldUser.key == (newUser.key);
         }
     };
-    final AsyncListDiffer<FileInfo> mDiffer = new AsyncListDiffer(this, DIFF_CALLBACK);
+    final AsyncListDiffer<Card> mDiffer = new AsyncListDiffer(this, DIFF_CALLBACK);
 
-    protected List<FileInfo> images;
+    protected List<Card> images;
     private CustomItemClickListener listener;
 
-    ImageSelectionRecyclerViewAdapter(List<FileInfo> images, CustomItemClickListener listener) {
+    ImageSelectionRecyclerViewAdapter(List<Card> images, CustomItemClickListener listener) {
         this.images = images;
         this.listener = listener;
     }
 
-    public void addItem(FileInfo c) {
+    public void addItem(Card c) {
         images.add(c);
         this.notifyDataSetChanged();
 
@@ -58,7 +58,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
 
     }
 
-    public FileInfo getItem(int position) {
+    public Card getItem(int position) {
         return mDiffer.getCurrentList().get(position);
     }
 
@@ -66,7 +66,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
         return mDiffer.getCurrentList().size();
     }
 
-    public void submitList(List<FileInfo> list) {
+    public void submitList(List<Card> list) {
         mDiffer.submitList(list);
     }
 
@@ -93,13 +93,13 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
     }
 
     public void onBindViewHolder(final CardViewHolder cardViewHolder, int i) {
-        FileInfo curr = mDiffer.getCurrentList().get(i);
+        Card curr = mDiffer.getCurrentList().get(i);
         Context c = cardViewHolder.cv.getContext();
 
 
         FileOperations.setImageSource(c,curr,cardViewHolder.image);
 
-        cardViewHolder.text.setText(curr.symbol.replace("_", " ").replaceAll("[0-9]", ""));
+        cardViewHolder.text.setText(curr.label.replace("_", " ").replaceAll("[0-9]", ""));
 
 
     }

@@ -202,16 +202,17 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
-    public void updateItem(int position, String label, String file, int resourceLocation) {
+    public void updateItem(int position, String label, String file, int resourceLocation,String pronunciation) {
         Card item = cards.get(position);
         item.label = label;
         item.photoId = file;
         item.resourceLocation = resourceLocation;
+        item.pronunciation = pronunciation;
         this.notifyItemChanged(position);
     }
 
     public void setItemTag(int position, String tag) {
-      
+
         CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForAdapterPosition(position);
         v.cv.setTag(tag);
     }

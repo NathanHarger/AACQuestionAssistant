@@ -20,16 +20,17 @@ import static android.content.ContentValues.TAG;
 public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "imageDatabase";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String TABLE_IMAGES = "images";
     private static final String KEY_IMAGE_ID = "id";
     private static final String KEY_IMAGE_FILE_LOC_ID = "fileID";
     private static final String KEY_IMAGE_LOCATION = "imageLoc";
     private static final String KEY_IMAGE_SYMBOL = "symbol";
+    private static final String KEY_VOCAB_PRONUNCIATION = "pronunciation";
     private static final String KEY_IMAGE_GRAMMAR = "grammar";
     public static String DB_FILEPATH = "/data/data/com.example.natha.aacquestionassistant/databases/imageDatabase";
     private static ImageDatabaseHelper sInstance;
-    SQLiteDatabase db;
+    private SQLiteDatabase db;
 
     private ImageDatabaseHelper(Context context) {
         super(context, null, null, DATABASE_VERSION);
@@ -110,7 +111,7 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void searchImages(String searchQuery, List<FileInfo> result) {
+    public void searchImages(String searchQuery, List<Card> result) {
 
 
 
@@ -136,7 +137,7 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
             if (c.moveToFirst()) {
                 do {
 
-                    result.add(new FileInfo(c.getInt(1),c.getString(2),c.getInt(3)));
+                    result.add(new Card(c.getInt(1),c.getString(2),c.getInt(3),c.getString(4)));
                     // count++;
                     //if(count > 15){
                     //     break;
@@ -166,21 +167,22 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
                 KEY_IMAGE_FILE_LOC_ID + " INTEGER," +
                 KEY_IMAGE_SYMBOL + " TEXT," +
 
-                KEY_IMAGE_LOCATION + " INTEGER " +
+                KEY_IMAGE_LOCATION + " INTEGER," +
+                KEY_VOCAB_PRONUNCIATION + " TEXT " +
                 ")";
 
         db.execSQL(CREATE_IMAGE_TABLE);
     }
 
-    public void addImage(FileInfo i) {
+    public void addImage(Card i) {
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
         try {
             ContentValues values = new ContentValues();
             values.put(KEY_IMAGE_FILE_LOC_ID, i.id);
-            values.put(KEY_IMAGE_SYMBOL, i.symbol);
-            values.put(KEY_IMAGE_LOCATION, i.imageLocation);
-
+            values.put(KEY_IMAGE_SYMBOL, i.label);
+            values.put(KEY_IMAGE_LOCATION, i.resourceLocation);
+            values.put(KEY_VOCAB_PRONUNCIATION, i.pronunciation);
 
             db.insertOrThrow(TABLE_IMAGES, null, values);
             db.setTransactionSuccessful();
