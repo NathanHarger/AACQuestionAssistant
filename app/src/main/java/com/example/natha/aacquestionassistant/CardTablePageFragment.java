@@ -17,6 +17,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,8 +35,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import static android.content.res.AssetManager.ACCESS_STREAMING;
+import static com.example.natha.aacquestionassistant.TextToSpeechManager.tts;
+
 public class CardTablePageFragment extends Fragment {
     static final int SELECT_IMAGE_REQUEST = 1;
+    static final int NEW_VOCAB_REQUEST = 1;
     List<Card> cards = new LinkedList<>();
     CardRecyclerViewAdapter adapter;
     int clickedCardIndex = 0;
@@ -58,40 +67,53 @@ public class CardTablePageFragment extends Fragment {
         adapter = new CardRecyclerViewAdapter(cards, new CustomItemClickListener() {
 
 
-            //MOVE the selection to ondown
             @Override
             public void onItemClick(View v, int position) {
-
-                Card c = cards.get(position);
-                long keyLastClick = adapter.getSelection();
-                if(keyLastClick != 0L ){
-
-                    adapter.setSelected(keyLastClick, false );
-                    adapter.stopDrag(keyLastClick);
-
-                }
-
-
-                adapter.setSelected(c.key, true);
-                Log.d("adf", "clicked position:" + position);
-                if (v.getTag().equals("cv") && !c.label.equals("") && locked) {
-                    if(c.pronunciation.length() == 0) {
-                        TextToSpeechManager.speak(c.label);
-                    } else{
-                        TextToSpeechManager.speak(c.pronunciation);
-
-                    }
-                } else if (v.getTag().equals("edit") && !locked ) {
+                if (v.getTag().equals("edit") && !locked) {
 
                     clickedCardIndex = position;
                     Intent i = new Intent(v.getContext(), ImageSelectionActivity.class);
                     ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, 0, 0);
                     startActivityForResult(i, SELECT_IMAGE_REQUEST, options.toBundle());
 
-                } else if(locked){
+                }else if(v.getTag().equals("new") && !locked){
+                    clickedCardIndex = position;
+                    Intent i = new Intent(v.getContext(), NewVocabActivity.class);
+                    ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, 0, 0);
+                    startActivityForResult(i, NEW_VOCAB_REQUEST, options.toBundle());
+                } else {
+                    Card c = cards.get(position);
+                    long keyLastClick = adapter.getSelection();
+
+                    // deselet and stop drag of prev
+                    if (keyLastClick != 0L) {
+                        adapter.setSelected(keyLastClick, false);
+                        adapter.stopDrag(keyLastClick);
+
+                        // if clicked on same clear and return
+                        if (keyLastClick == c.key && !locked) {
+                            return;
+                        }
+                    }
+
+
+                    adapter.setSelected(c.key, true);
+                    Log.d("adf", "clicked position:" + position);
+                    if (v.getTag().equals("cv") && !c.label.equals("") && locked) {
+                        if (c.pronunciation.length() == 0) {
+                            TextToSpeechManager.speak(c.label);
+                        } else {
+                            TextToSpeechManager.speak(c.pronunciation);
+
+                        }
+                    }
+
+                 else if (locked) {
                     Toast.makeText(v.getContext(), "Card Edit Locked Out", Toast.LENGTH_SHORT).show();
                 }
             }
+            }
+
 
         }, rv, getContext());
 
@@ -156,14 +178,6 @@ public class CardTablePageFragment extends Fragment {
 
 
         ((CardFragmentActivity)getActivity()).setBottomappbarCallbackInterface(bottomappbarCallbackInterface);
-
-        if (cards.size() == 0) {
-
-            adapter.addItem(new Card("b", "b"));
-            adapter.addItem(new Card("c", "c"));
-            adapter.addItem(new Card("a", "a"));
-            adapter.addItem(new Card("d", "d"));
-        }
         return view;
     }
 
@@ -177,25 +191,32 @@ public class CardTablePageFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SELECT_IMAGE_REQUEST) {
+        if (requestCode == SELECT_IMAGE_REQUEST || requestCode == NEW_VOCAB_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
                 if (data.hasExtra("name")) {
+                    int id = data.getIntExtra("id", -1);
                     String returnValue = data.getStringExtra("name");
                     String returnImage = data.getStringExtra("filename");
                     int resourceLocation = data.getIntExtra("resourceLocation",0);
                     String pronunciation = data.getStringExtra("pronunciation");
-                    if (returnImage.equals("") || returnValue.equals("")) {
-                        adapter.setItemTag(clickedCardIndex, "cv");
-                        return;
-                    }
+                    adapter.setItemTag(clickedCardIndex, "cv");
+
                     String label = returnValue.replace("_", " ");
                     label = label.replaceAll("[0-9]", "");
 
-                    adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation,pronunciation);
+                    adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation,pronunciation,id);
                 } else {
                     adapter.setItemTag(clickedCardIndex, "cv");
                 }
             }
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        tts.shutdown();
+    }
+
+
 }

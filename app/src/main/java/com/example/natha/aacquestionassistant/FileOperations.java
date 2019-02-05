@@ -18,10 +18,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -51,23 +50,32 @@ public class FileOperations {
         return directory.getAbsolutePath();
     }
 
-    private static void loadImageFromStorage( Context context, String filename, ImageView img){
+    private static boolean loadImageFromStorage( Context context, String filename, ImageView img){
         try {
             ContextWrapper cw = new ContextWrapper(context);
             File directory =  cw.getDir("imageDir", Context.MODE_PRIVATE);
 
+
             File f = new File(directory, filename +".png");
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-            img.setImageBitmap(b);
+            Bitmap b;
+            if(f.exists()) {
+                b = BitmapFactory.decodeStream(new FileInputStream(f));
+                img.setImageBitmap(b);
+                return true;
+            } else{
+                return false;
+            }
         } catch (FileNotFoundException e){
             e.printStackTrace();
         }
+        return false;
     }
 
-    public static void setImageSource(Context context, Card fileInfo, ImageView imageSource){
+    public static boolean setImageSource(Context context, Card fileInfo, ImageView imageSource){
         int resourceLoc = fileInfo.resourceLocation;
         if(resourceLoc == 0) {
             Resources resources = context.getResources();
+
 
 
             final int resourceId = resources.getIdentifier(fileInfo.label, "drawable",
@@ -75,23 +83,26 @@ public class FileOperations {
             imageSource.setImageResource(resourceId);
 
         } else {
-            loadImageFromStorage(context,(fileInfo.photoId) , imageSource);
-        }
 
+
+                return !loadImageFromStorage(context,(fileInfo.photoId) , imageSource);
+
+        }
+        return true;
     }
-    public static void writeNewVocabToSymbolInfo(Context context, Card fileInfo, Bitmap image){
+    public static String writeNewVocabToSymbolInfo(Context context, Card fileInfo, Bitmap image){
         ContextWrapper cw = new ContextWrapper(context);
-        String filename = fileInfo.label;
-        String line = "";
-        String split = ",";
+        String filename = fileInfo.photoId;
         BufferedWriter b = null;
         File directory =  cw.getDir("imageDir", Context.MODE_PRIVATE);
         File mypath = new File(directory,  "fringeVocab.csv");
 
+        String photoId = "";
+
         try {
 
             String[] directoryList =directory.list();
-            Pattern p = Pattern.compile(filename+"(\\d+)\\.png|" + filename +".png");
+            Pattern p = Pattern.compile(filename+"_(\\d+)\\.png|" + filename +".png");
 
             List<String> matches = new ArrayList<>();
 
@@ -101,17 +112,17 @@ public class FileOperations {
                 }
             }
 
-            filename = filename + matches.size();
-            fileInfo.label = filename;
+             photoId = filename + "_"+matches.size();
+            fileInfo.photoId = photoId;
             b = new BufferedWriter(new FileWriter(mypath,true));
 
             if(mypath.length() == 0){
-                b.append((filename )+ "," +"1," + fileInfo.pronunciation );
+                b.append(fileInfo.id + "," +(photoId )+ "," +"1," + fileInfo.pronunciation );
             } else {
-                b.append(("\n" + filename) + "," + "1," + fileInfo.pronunciation);
+                b.append(("\n"+ fileInfo.id+"," + photoId) + "," + "1," + fileInfo.pronunciation);
             }
             ImageDatabaseHelper.getInstance(context).addImage(fileInfo);
-            saveToInternalStorage(image, filename, context);
+            saveToInternalStorage(image, photoId, context);
         } catch (FileNotFoundException e) {
             Log.e("CSV parsing: ", String.valueOf(e.getStackTrace()));
         } catch (
@@ -126,7 +137,100 @@ public class FileOperations {
                 }
            }
         }
+        return photoId;
     }
+
+    public static void deleteCustomVocab(String filename, Context context){
+        int targetNum = -1;
+        String[] filenameTokens = filename.split("_");
+
+        targetNum = Integer.parseInt(filenameTokens[1]);
+        String targetFilename = filenameTokens[0];
+
+
+
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory =  cw.getDir("imageDir", Context.MODE_PRIVATE);
+
+        File f = new File(directory,  "fringeVocab.csv");
+        File temp = new File(directory, "temp.csv");
+        BufferedReader fr = null;
+        BufferedWriter fw = null;
+        try {
+            fr = new BufferedReader(new FileReader(f));
+             fw = new BufferedWriter(new FileWriter(temp));
+            String line  = "";
+             while((line =fr.readLine()) != null){
+                 String[] tokens = line.split(",");
+                 String currFilename = tokens[1];
+
+                 String[] currFilnameTokens = currFilename.split("_");
+
+                 int lastNum = Integer.parseInt(currFilnameTokens[1]);
+                 currFilename = currFilnameTokens[0];
+
+
+                 //if the filename don't match write  to file
+                 if (!currFilename.equals(targetFilename)){
+
+                         fw.append(line);
+                        fw.append("\n");
+
+
+
+                 } else{
+                     // decrease all file counts after the deleted count
+
+                      if(lastNum == targetNum){
+                          File image = new File(directory, filename +".png" );
+                          image.delete();
+
+                          continue;
+                     } else if(lastNum > targetNum) {
+                         // write with num--
+                          fw.append(currFilename+""+(lastNum-1) + "," +"1," + tokens[2]);
+                          fw.append("\n");
+
+                          File rename = new File(directory,currFilename+("" + lastNum)+".png");
+                          rename.renameTo(new File(directory, currFilename+""+(lastNum-1)+".png"));
+
+
+                      } else{
+                          //write
+                          fw.append(line);
+                          fw.append("\n");
+                          File rename = new File(directory,currFilename+("" + lastNum)+".png");
+                          rename.renameTo(new File(directory, currFilename+""+(lastNum-1)+".png"));
+
+
+                      }
+                 }
+
+
+
+
+             }
+
+            boolean delete = f.delete();
+            File newfile = new File(directory,"fringeVocab.csv");
+            boolean renamed = temp.renameTo(newfile);
+            Log.d("delete ", ""+renamed);
+
+        } catch ( Exception e){
+
+        } finally {
+            try {
+                fr.close();
+                fw.close();
+            } catch (Exception e){
+
+            }
+
+        }
+
+    }
+
+
 
     public static void readNewVocab(Context context, ImageDatabaseHelper idh){
         ContextWrapper cw = new ContextWrapper(context);
@@ -141,7 +245,9 @@ public class FileOperations {
             while ((line = b.readLine()) != null ) {
 
                 String[] tokens = line.split(",");
-                idh.addImage(new Card(idh.getSize()+1, tokens));
+
+                int id = Integer.parseInt(tokens[0]);
+                idh.addImage(new Card(id, Arrays.copyOfRange(tokens,1, tokens.length)));
             }
 
         } catch (FileNotFoundException e) {

@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <item
         android:id="@+id/new_item_create"
-        android:icon="@drawable/baseline_add_box_white_18dp"
-        app:showAsAction="ifRoom"
+        android:icon="@drawable/book_plus"
         android:title="Create New Word"
-        android:titleCondensed="Create Word">
+        android:titleCondensed="Create Word"
+        app:showAsAction="always">
+
+    </item>
+    <item
+        android:id="@+id/add_card"
+        android:icon="@android:drawable/ic_menu_add"
+        app:showAsAction="always"
+        android:title="Add Card"
+        android:titleCondensed="Add Card">
     </item>
     <item
         android:id="@+id/item_edit"
         android:icon="@android:drawable/ic_menu_edit"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="Edit"
         android:titleCondensed="Edit">
     </item>
     <item
         android:id="@+id/item_delete"
         android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="ifRoom|withText"
+        app:showAsAction="always"
         android:title="Delete"
         android:titleCondensed="Delete">
     </item>

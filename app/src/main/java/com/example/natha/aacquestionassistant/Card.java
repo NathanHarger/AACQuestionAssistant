@@ -34,6 +34,7 @@ public class Card implements Parcelable {
     }
 
     public Card(Parcel in) {
+        this.id = in.readInt();
         this.key = in.readLong();
         this.label = in.readString();
         this.photoId = in.readString();
@@ -56,6 +57,7 @@ public class Card implements Parcelable {
         if (other == null) {
             return null;
         }
+        id = other.id;
         label = other.label;
         photoId = other.photoId;
         //key = other.key;
@@ -71,6 +73,7 @@ public class Card implements Parcelable {
 
 
     public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(id);
         out.writeLong(key);
         out.writeString(label);
         out.writeString(photoId);
@@ -93,6 +96,7 @@ public class Card implements Parcelable {
     @NonNull
     public String toString() {
         return "Card{" +
+                "id='" + id + '\'' +
                 "key='" + key + '\'' +
                 ", label='" + label + '\'' +
                 ", photoId='" + photoId + '\'' +
@@ -100,9 +104,9 @@ public class Card implements Parcelable {
                 ", pronunciation='" + pronunciation + '\''+
                 '}';
     }
-    public Card(int id, String filename, int imageLocation, String pronunciation) {
+    public Card(int id, String filename, String photoId, int imageLocation, String pronunciation) {
         this.key = this.hashCode();
-        this.photoId = filename;
+        this.photoId = photoId;
         this.id = id;
         this.label = filename;
         this.resourceLocation = imageLocation;

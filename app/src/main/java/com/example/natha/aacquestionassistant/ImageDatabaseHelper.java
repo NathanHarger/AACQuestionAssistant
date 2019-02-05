@@ -21,10 +21,10 @@ import static android.content.ContentValues.TAG;
 public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "imageDatabase";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 9;
     private static final String TABLE_IMAGES = "images";
     private static final String KEY_IMAGE_ID = "id";
-    private static final String KEY_IMAGE_FILE_LOC_ID = "fileID";
+    private static final String KEY_IMAGE_FILE_LOC = "fileID";
     private static final String KEY_IMAGE_LOCATION = "imageLoc";
     private static final String KEY_IMAGE_SYMBOL = "symbol";
     private static final String KEY_VOCAB_PRONUNCIATION = "pronunciation";
@@ -69,16 +69,9 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         }
         return false;
     }
-
+    private int size =0;
     int getSize() {
-        //SELECT COUNT(*) FROM IMAGES
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery(String.format("SELECT COUNT(*) FROM %s", TABLE_IMAGES), null);
-        c.moveToFirst();
-        int count = c.getInt(0);
-        c.close();
-        return count;
-
+        return size;
     }
 
     public List<String> getAll() {
@@ -112,9 +105,6 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
     }
 
     void searchImages(String searchQuery, List<Card> result) {
-
-
-
         String query;
         if(searchQuery.length() == 0){
            return;
@@ -124,22 +114,18 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
                             " OR symbol = "  + "'"+(searchQuery + "_lower_case")+ "'";
         } else{
             query =
-            String.format("SELECT * FROM %s WHERE %s LIKE '%%%s%%'",
+            String.format("SELECT * FROM %s WHERE %s LIKE '%%%s%%' LIMIT 12",
                      TABLE_IMAGES, KEY_IMAGE_SYMBOL, searchQuery, KEY_IMAGE_GRAMMAR);
         }
 
 
         try (Cursor c = db.rawQuery(query, null)) {
             db.beginTransaction();
-            //int count = 0;
             if (c.moveToFirst()) {
                 do {
+                    //RIGHT HERE THE ID IS NOT BEING STORED
 
-                    result.add(new Card(c.getInt(1), c.getString(2), c.getInt(3), c.getString(4)));
-                    // count++;
-                    //if(count > 15){
-                    //     break;
-                    //}
+                    result.add(new Card(c.getInt(0), c.getString(2),c.getString(1) ,c.getInt(3), c.getString(4)));
                 } while (c.moveToNext());
             }
         } catch (Exception e) {
@@ -161,26 +147,27 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         String CREATE_IMAGE_TABLE = "CREATE TABLE " + TABLE_IMAGES +
                 "(" +
                 KEY_IMAGE_ID + " INTEGER PRIMARY KEY," + // Define a primary key
-                KEY_IMAGE_FILE_LOC_ID + " INTEGER," +
+                KEY_IMAGE_FILE_LOC + " TEXT," +
                 KEY_IMAGE_SYMBOL + " TEXT," +
 
                 KEY_IMAGE_LOCATION + " INTEGER," +
                 KEY_VOCAB_PRONUNCIATION + " TEXT " +
                 ")";
-
         db.execSQL(CREATE_IMAGE_TABLE);
     }
 
     void addImage(Card i) {
+        size++;
+
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
+
         try {
             ContentValues values = new ContentValues();
-            values.put(KEY_IMAGE_FILE_LOC_ID, i.id);
+            values.put(KEY_IMAGE_FILE_LOC, i.photoId);
             values.put(KEY_IMAGE_SYMBOL, i.label);
             values.put(KEY_IMAGE_LOCATION, i.resourceLocation);
             values.put(KEY_VOCAB_PRONUNCIATION, i.pronunciation);
-
             db.insertOrThrow(TABLE_IMAGES, null, values);
             db.setTransactionSuccessful();
 
@@ -189,6 +176,7 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
         } finally {
             db.endTransaction();
+
         }
 
     }
@@ -203,6 +191,15 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGES);
             onCreate(db);
         }
+    }
+
+    public void customVocabActive(int id, String photoId){
+        String q = "SELECT COUNT(*) FROM images WHERE id = " + id + "and photoId = " +  photoId;
+    }
+    public  void deleteCustomVocab(int id){
+        String q = "DELETE FROM images WHERE id = " + id;
+        db.execSQL(q);
+
     }
 }
 

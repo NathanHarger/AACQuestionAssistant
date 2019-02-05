@@ -5,9 +5,11 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -38,12 +40,19 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
 
     protected List<Card> images;
     private CustomItemClickListener listener;
+    private RecyclerView rv;
 
-    ImageSelectionRecyclerViewAdapter(List<Card> images, CustomItemClickListener listener) {
+
+    ImageSelectionRecyclerViewAdapter(List<Card> images, CustomItemClickListener listener, RecyclerView rv) {
         this.images = images;
         this.listener = listener;
+        this.rv = rv;
     }
 
+    public Card getCardFromCardView(View cv){
+        int pos = rv.getChildAdapterPosition(cv);
+        return mDiffer.getCurrentList().get(pos);
+    }
     public void addItem(Card c) {
         images.add(c);
         this.notifyDataSetChanged();
@@ -92,6 +101,18 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
 
     }
 
+    public void remove(Card c){
+        List<Card> result = new LinkedList<>();
+        for(Card curr : mDiffer.getCurrentList()){
+            if(curr.key != c.key){
+                result.add(curr);
+            }
+        }
+        mDiffer.submitList(result);
+
+    }
+
+
     public void onBindViewHolder(final CardViewHolder cardViewHolder, int i) {
         Card curr = mDiffer.getCurrentList().get(i);
         Context c = cardViewHolder.cv.getContext();
@@ -99,21 +120,31 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
 
         FileOperations.setImageSource(c,curr,cardViewHolder.image);
 
-        cardViewHolder.text.setText(curr.label.replace("_", " ").replaceAll("[0-9]", ""));
+
+        curr.label = curr.label.replace("_", " ").replaceAll("[0-9]", "");
+        if(!curr.pronunciation.equals("")){
+            curr.label += " (" + curr.pronunciation + ")";
+        }
 
 
+        cardViewHolder.text.setText(curr.label );
+
+        cardViewHolder.deleteCard.setVisibility(curr.resourceLocation == 1 ? View.VISIBLE : View.GONE);
     }
 
     public static class CardViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         ImageView image;
         TextView text;
+        ImageButton deleteCard;
 
         CardViewHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cv);
             image = itemView.findViewById(R.id.imageView);
             text = itemView.findViewById(R.id.image_selection_text);
+            deleteCard = itemView.findViewById(R.id.imageSelectionDelete);
         }
     }
+
 }

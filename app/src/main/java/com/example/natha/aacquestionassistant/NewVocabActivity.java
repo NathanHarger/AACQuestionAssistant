@@ -1,37 +1,27 @@
 package com.example.natha.aacquestionassistant;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+
 import android.os.Bundle;
-import android.os.Parcel;
-import android.provider.MediaStore;
-import android.util.Log;
+
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
-import com.vansuita.pickimage.listeners.IPickClick;
 import com.vansuita.pickimage.listeners.IPickResult;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import static android.content.res.AssetManager.ACCESS_STREAMING;
 
 public class NewVocabActivity extends AppCompatActivity implements IPickResult {
 PickImageDialog pickImageDialog;
@@ -40,6 +30,19 @@ private Bitmap selectedImage;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_vocab_activity);
+
+        if(savedInstanceState != null){
+            Bitmap bitmapid = savedInstanceState.getParcelable("bitmap");
+            selectedImage = bitmapid;
+            ImageView image = findViewById(R.id.imageView2);
+            image.setImageBitmap(selectedImage);
+        }
+
+        Bundle b = getIntent().getExtras();
+        if(b != null){
+            String word = b.getString("word");
+            ((EditText) findViewById(R.id.editText2)).setText(word);
+        }
         idh = ImageDatabaseHelper.getInstance(NewVocabActivity.this);
     }
     private final int RESULT_LOAD_IMAGE = 1;
@@ -48,12 +51,15 @@ private Bitmap selectedImage;
         pickImageDialog = PickImageDialog.build(new PickSetup()).show(this);
     }
 
+
+
+
     public void submitVocab(View v){
         ImageView image = findViewById(R.id.imageView2);
         EditText word = findViewById(R.id.editText2);
 
-        if(word.getText().toString().equals("")){
-            Toast.makeText( this,"Vocab word cannot be empty", Toast.LENGTH_SHORT).show();
+        if(word.getText().toString().length() <3){
+            Toast.makeText( this,"Vocab word must be longer than 3", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -62,10 +68,19 @@ private Bitmap selectedImage;
             return;
         }
 
-        String filename = word.getText().toString().replace(" ", "_");
-        FileOperations.writeNewVocabToSymbolInfo(getApplicationContext(),
-                new Card( idh.getSize() +1 , filename, 1,pronunciation), selectedImage);
+        int id = idh.getSize() + 1;
+        String label = word.getText().toString().replace(" ", "_");
+        String fileid = FileOperations.writeNewVocabToSymbolInfo(getApplicationContext(),
+                new Card( id, label,label, 1,pronunciation), selectedImage);
 
+
+        Intent output = new Intent();
+        output.putExtra("id", id);
+        output.putExtra("name", label);
+        output.putExtra("filename", fileid);
+        output.putExtra("resourceLocation", 1);
+        output.putExtra("pronunciation", pronunciation);
+        setResult(Activity.RESULT_OK, output);
         finish();
     }
     private PronunciationDialogFragment newDialog;
@@ -114,5 +129,13 @@ private Bitmap selectedImage;
 
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outstate) {
+        if(selectedImage != null)
+            outstate.putParcelable("bitmap", selectedImage);
+        super.onSaveInstanceState(outstate);
+
+    }
 
 }

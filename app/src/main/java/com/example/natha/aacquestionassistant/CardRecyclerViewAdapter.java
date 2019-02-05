@@ -41,6 +41,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 
 public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CardRecyclerViewAdapter.CardViewHolder> implements ItemTouchHelperAdapter {
 
@@ -49,6 +52,22 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     private ItemTouchHelper ith;
     private CustomItemClickListener listener;
     private Context context;
+    final private RecyclerView.AdapterDataObserver observer = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            checkIfEmpty();
+        }
+
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            checkIfEmpty();
+        }
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            checkIfEmpty();
+        }
+    };
     void menuClick(int id){
         long key = getSelection();
 
@@ -62,23 +81,37 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
                 }
 
             } else if (id == R.id.item_edit) {
-                Card clickedCard = getItem(key);
-                int pos = cards.indexOf(clickedCard);
-                CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForAdapterPosition(pos);
-                v.cv.setTag("edit");
 
-                listener.onItemClick(v.cv, cards.indexOf(clickedCard));
+                startMenuProcessOnCard(key,"edit");
+
             }
         }
 
+
         if (id == R.id.new_item_create){
+            if(key != 0){
+              startMenuProcessOnCard(key,"new");
+            } else {
+                Intent createVocabIntent = new Intent(context, NewVocabActivity.class);
 
-            Intent createVocabIntent = new Intent(context, NewVocabActivity.class);
+                context.startActivity(createVocabIntent);
+            }
+        } else  if(id == R.id.add_card){
 
-            context.startActivity(createVocabIntent);
-
+            this.addItem(new Card("",""));
         }
+
+
     }
+
+    private void startMenuProcessOnCard(long key, String tag){
+        Card clickedCard = getItem(key);
+        int pos = cards.indexOf(clickedCard);
+        CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForAdapterPosition(pos);
+        v.cv.setTag(tag);
+        listener.onItemClick(v.cv, pos);
+    }
+
     public boolean getLocked(){
         return locked;
     }
@@ -91,6 +124,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         return 0L;
     }
     private boolean locked = false;
+
     public void startDrag(long key){
         CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForItemId(key);
         ith.startDrag(v);
@@ -98,6 +132,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
 
     void  stopDrag(long key) {
         CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForItemId(key);
+
         simpleItemTouchHelperCallback.clearView(rv,v);
     }
     CardRecyclerViewAdapter(List<Card> cards, CustomItemClickListener listener, RecyclerView rv, Context context) {
@@ -107,7 +142,23 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         setHasStableIds(true);
         this.context = context;
 
+        this.setEmptyView(((ConstraintLayout)rv.getParent()).findViewById(R.id.empty_view));
 
+        registerAdapterDataObserver(observer);
+    }
+
+    private View emptyView;
+    public void setEmptyView(View emptyView) {
+        this.emptyView = emptyView;
+        checkIfEmpty();
+    }
+
+    private void checkIfEmpty() {
+
+        if (emptyView != null ) {
+            final boolean emptyViewVisible = getItemCount() == 0;
+            emptyView.setVisibility(emptyViewVisible ? VISIBLE : GONE );
+        }
     }
 
     void setTouchHelper(ItemTouchHelper ith) {
@@ -120,6 +171,9 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     }
 
     void addItem(Card c) {
+        if(!(cards.size() < 6)){
+            return;
+        }
         cards.add(c);
         this.notifyDataSetChanged();
         long key = getSelection();
@@ -159,6 +213,11 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
+    private void deleteCard(Card c){
+       int removedIndex = cards.indexOf(c);
+       cards.remove(removedIndex);
+       notifyItemRemoved(removedIndex);
+    }
     private void deleteSelected() {
 
         Iterator i = cards.iterator();
@@ -184,10 +243,12 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
             Card curr = cards.get(i);
 
             if (curr.key == id) {
-                CardViewHolder cardViewHolder = (CardViewHolder) rv.findViewHolderForItemId(curr.key);
+
                 Context c = rv.getContext();
                 curr.isSelected = selected;
                 cards.set(i, curr);
+                CardViewHolder cardViewHolder = (CardViewHolder) rv.findViewHolderForItemId(curr.key);
+                if(cardViewHolder!=null) {
                     if (selected) {
 
                         Resources r = c.getResources();
@@ -200,12 +261,14 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
 
                         cardViewHolder.cv.setBackgroundColor(Color.LTGRAY);
                     }
+                }
             }
         }
     }
 
-    void updateItem(int position, String label, String file, int resourceLocation, String pronunciation) {
+    void updateItem(int position, String label, String file, int resourceLocation, String pronunciation, int id) {
         Card item = cards.get(position);
+        item.id = id;
         item.label = label;
         item.photoId = file;
         item.resourceLocation = resourceLocation;
@@ -319,7 +382,10 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         Context c = cardViewHolder.cv.getContext();
         Resources resources = c.getResources();
         Card card = cards.get(i);
+
+        // if false the image has been deleted
         FileOperations.setImageSource(c, card,cardViewHolder.image );
+
 
 
         if ( card.isSelected) {

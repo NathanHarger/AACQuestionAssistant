@@ -2,15 +2,19 @@ package com.example.natha.aacquestionassistant;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +25,8 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import static android.content.res.AssetManager.ACCESS_STREAMING;
+
 public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity {
     final int PAGE_COUNT = 2;
     private PagerAdapter pagerAdapter;
@@ -28,6 +34,8 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
     private Context context;
     private List<Fragment> fragments;
     BottomappbarCallbackInterface bottomappbarCallbackInterface;
+    private ImageDatabaseHelper idh;
+
 
 
 
@@ -45,6 +53,12 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
         //initialsie the pager
         this.initialisePaging();
+        idh = ImageDatabaseHelper.getInstance(this.getApplicationContext());
+
+        if(idh.getSize() == 0) {
+            setupDB();
+        }
+
     }
 
     private boolean locked = false;
@@ -52,17 +66,11 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
     public void setBottomappbarCallbackInterface(final BottomappbarCallbackInterface listener){
         bottomappbarCallbackInterface = listener;
-        final FloatingActionButton fab = findViewById(R.id.add_card_fab);
         final ActionMenuItemView  newItemCreate = findViewById(R.id.new_item_create);
         final ActionMenuItemView  itemEdit = findViewById(R.id.item_edit);
         final ActionMenuItemView itemDelete = findViewById(R.id.item_delete);
+        final ActionMenuItemView newcard = findViewById(R.id.add_card);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.addButtonClick();
-            }
-        });
 
         final BottomAppBar bottomAppBar = findViewById(R.id.bottomAppBar);
         bottomAppBar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -70,13 +78,14 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
             public void onClick(View v) {
                 locked = !locked;
 
-                bottomAppBar.setNavigationIcon(locked ? R.drawable.ic_lock_outline_black_24dp : R.drawable.ic_lock_open_black_24dp);
+                bottomAppBar.setNavigationIcon(locked ? R.drawable.locked : R.drawable.unlocked);
+
                 Objects.requireNonNull(bottomAppBar.getNavigationIcon()).setAlpha(locked ? 158:255);
-                fab.setAlpha(locked? .5f:1f);
                 newItemCreate.setAlpha(locked? .5f:1f);
                 itemEdit.setAlpha(locked? .5f:1f);
                 itemDelete.setAlpha(locked? .5f:1f);
 
+                newcard.setAlpha(locked? .5f:1f);
 
 
                 listener.toggleUiLockClick();
@@ -119,11 +128,14 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         this.pagerAdapter = new CardPagerAdapter(super.getSupportFragmentManager(), fragments);
         //
         ViewPager pager = super.findViewById(R.id.viewpager);
-        //TabLayout tabLayout = findViewById(R.id.tabDots);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
 
-        //tabLayout.setupWithViewPager(pager, true);
-
+        tabLayout.setupWithViewPager(pager, true);
         pager.setAdapter(this.pagerAdapter);
+
+        tabLayout.getTabAt(0).setText("Question");
+                tabLayout.getTabAt(1).setText("Yes No");
+
 
 
     }
@@ -132,6 +144,40 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         TextView tv = v.findViewWithTag("name");
         String s = tv.getText().toString();
         TextToSpeechManager.speak(s);
+    }
+
+
+    public void setupDB() {
+
+        String line = "";
+        String split = ",";
+        BufferedReader b = null;
+        try {
+            // read in core vocab
+            InputStream s = this.getApplicationContext().getAssets().open("symbol-info.csv", ACCESS_STREAMING);
+            b = new BufferedReader(new InputStreamReader(s));
+
+            // read header
+            b.readLine();
+            while ((line = b.readLine()) != null) {
+                idh.addImage(new Card(line.split(split)));
+            }
+
+            // read in custom vocab
+            FileOperations.readNewVocab(this.getApplicationContext() , idh);
+        } catch (FileNotFoundException e) {
+            Log.e("CSV parsing: ", String.valueOf(e.getStackTrace()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (b != null) {
+                try {
+                    b.close();
+                } catch (IOException e) {
+                    Log.e("CSV parsing: ", String.valueOf(e.getStackTrace()));
+                }
+            }
+        }
     }
 
 
