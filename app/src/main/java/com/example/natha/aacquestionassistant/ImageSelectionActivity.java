@@ -142,6 +142,8 @@ public class ImageSelectionActivity extends AppCompatActivity {
     }
     DeleteNewVocabDialogFragment deleteNewVocabDialogFragment;
     Card deletedCard= null;
+
+    ArrayList<String> deletedVocab = new ArrayList<>();
 public void deleteCustomVocab(View v){
 
     // only perform the following when the x is clicked v.id is x's id :)
@@ -161,8 +163,8 @@ public void deleteCustomVocab(View v){
         idh.deleteCustomVocab(deletedCard.id);
         FileOperations.deleteCustomVocab(deletedCard.photoId,v.getContext());
         deleteNewVocabDialogFragment.dismiss();
-
         adapter.remove(deletedCard);
+        deletedVocab.add(deletedCard.photoId);
 
     }
 
@@ -189,9 +191,11 @@ public void deleteCustomVocab(View v){
         super.onSaveInstanceState(outstate);
     }
 
+
     @Override
     public void onBackPressed() {
         Intent output = new Intent();
+        output.putExtra("deletedList", deletedVocab);
 
         setResult(Activity.RESULT_OK, output);
         finish();
@@ -236,7 +240,7 @@ public void deleteCustomVocab(View v){
                     output.putExtra("filename", returnImage);
                     output.putExtra("resourceLocation", resourceLocation);
                     output.putExtra("pronunciation", pronunciation);
-
+                    output.putExtra("deletedList", deletedVocab);
                     setResult(Activity.RESULT_OK, output);
                     finish();
 

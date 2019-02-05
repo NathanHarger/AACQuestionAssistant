@@ -208,6 +208,11 @@ public class CardTablePageFragment extends Fragment {
                 } else {
                     adapter.setItemTag(clickedCardIndex, "cv");
                 }
+
+                if(data.hasExtra("deletedList")){
+                    ArrayList<String> deletedVocab = (ArrayList<String>) data.getSerializableExtra("deletedList");
+                    adapter.deleteInvalidVocab(deletedVocab);
+                }
             }
         }
     }

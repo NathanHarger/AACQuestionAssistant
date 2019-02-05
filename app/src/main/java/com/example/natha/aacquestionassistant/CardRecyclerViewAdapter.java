@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -214,8 +215,8 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     }
 
     private void deleteCard(Card c){
-       int removedIndex = cards.indexOf(c);
-       cards.remove(removedIndex);
+        int removedIndex = cards.indexOf(c);
+       cards.remove(c);
        notifyItemRemoved(removedIndex);
     }
     private void deleteSelected() {
@@ -408,6 +409,23 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         notifyItemRemoved(position);
     }
 
+
+    public void deleteInvalidVocab( ArrayList<String> deletedVocab){
+        ArrayList<Card> cardsToDelete = new ArrayList<>();
+        for(String curr : deletedVocab){
+            for(int i = 0; i < cards.size(); i++){
+                Card currCard = cards.get(i);
+                if(currCard.photoId.equals(curr)){
+                    cardsToDelete.add(currCard);
+                }
+            }
+
+            for (Card i: cardsToDelete) {
+                deleteCard(i);
+
+            }
+        }
+    }
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
 
