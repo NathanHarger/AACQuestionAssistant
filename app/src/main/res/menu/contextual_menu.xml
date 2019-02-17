@@ -4,31 +4,29 @@
     <item
         android:id="@+id/new_item_create"
         android:icon="@drawable/book_plus"
-        android:title="Create New Word"
+        android:title="@string/create_new_word"
         android:titleCondensed="Create Word"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom|withText">
 
     </item>
     <item
         android:id="@+id/add_card"
         android:icon="@android:drawable/ic_menu_add"
-        app:showAsAction="always"
-        android:title="Add Card"
-        android:titleCondensed="Add Card">
-    </item>
+        android:title="@string/add_card"
+        android:titleCondensed="Add Card"
+        app:showAsAction="always|withText"/>
     <item
         android:id="@+id/item_edit"
         android:icon="@android:drawable/ic_menu_edit"
-        app:showAsAction="always"
-        android:title="Edit"
-        android:titleCondensed="Edit">
-    </item>
+        android:title="@string/edit"
+        android:titleCondensed="Edit"
+        app:showAsAction="always|withText"/>
     <item
         android:id="@+id/item_delete"
         android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="always"
-        android:title="Delete"
-        android:titleCondensed="Delete">
-    </item>
+        android:title="@string/delete"
+        android:titleCondensed="Delete"
+
+        app:showAsAction="always|withText"/>
 
 </menu>

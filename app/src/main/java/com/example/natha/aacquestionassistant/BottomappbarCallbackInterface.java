@@ -1,10 +1,6 @@
 package com.example.natha.aacquestionassistant;
 
-import android.widget.Toolbar;
-
-public interface BottomappbarCallbackInterface{
-    void addButtonClick();
+interface BottomappbarCallbackInterface {
     void toggleUiLockClick();
     void menuClick(int id);
-
 }

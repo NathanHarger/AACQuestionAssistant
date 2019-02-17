@@ -15,62 +15,70 @@ public class Card implements Parcelable {
             return new Card[size];
         }
     };
-
+    final long key;
     String label;
     String photoId;
-    long key;
     int id;
     boolean isSelected;
     int resourceLocation;
     String pronunciation;
 
-    Card(String label, String photoId) {
+    Card() {
         this.key = this.hashCode();
-        this.label = label;
-        this.photoId = photoId;
+        this.label = "";
+        this.photoId = "";
         this.isSelected = false;
         pronunciation = "";
-
     }
 
-    public Card(Parcel in) {
+    private Card(Parcel in) {
         this.id = in.readInt();
         this.key = in.readLong();
         this.label = in.readString();
         this.photoId = in.readString();
-        this.isSelected = (Boolean) in.readValue(null);
+        this.isSelected = (boolean) in.readValue(getClass().getClassLoader());
         pronunciation = in.readString();
     }
+
     Card(String values[]) {
         this.key = this.hashCode();
         this.id = Integer.parseInt(values[0]);
         this.label = values[1];
+        this.photoId = values[1]+values[0];
         resourceLocation = Integer.parseInt(values[2]);
-        if(values.length == 4){
+        if (values.length == 4) {
             pronunciation = values[3];
-
         } else {
             pronunciation = "";
         }
     }
-    public Card update(Card other) {
-        if (other == null) {
-            return null;
+
+    public Card(int id, String values[]) {
+        this.key = this.hashCode();
+        this.id = id;
+        label = values[0];
+        resourceLocation = Integer.parseInt(values[1]);
+        if (values.length == 3) {
+            pronunciation = values[2];
+        } else {
+            pronunciation = "";
         }
-        id = other.id;
-        label = other.label;
-        photoId = other.photoId;
-        //key = other.key;
-        isSelected = other.isSelected;
-        return this;
+    }
+
+
+    public Card(int id, String filename, String photoId, int imageLocation, String pronunciation) {
+        this.key = this.hashCode();
+        this.photoId = photoId;
+        this.id = id;
+        this.label = filename;
+        this.resourceLocation = imageLocation;
+        this.pronunciation = pronunciation;
     }
 
     @Override
     public int describeContents() {
         return 0;
     }
-
-
 
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(id);
@@ -80,17 +88,21 @@ public class Card implements Parcelable {
         out.writeValue(isSelected);
         out.writeString(pronunciation);
     }
-    public Card(int id, String values[]){
-        this.key = this.hashCode();
 
-        this.id = id;
-        label = values[0];
-        resourceLocation =Integer.parseInt(values[1]);
-        if(values.length == 3) {
-            pronunciation = values[2];
-        } else{
-            pronunciation = "";
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
         }
+        if (!(o instanceof Card)) {
+            return false;
+        }
+
+        Card c = (Card) o;
+        if(id == 0){
+            return c.key == this.key;
+        }
+        return c.id == this.id;
     }
 
     @NonNull
@@ -101,16 +113,7 @@ public class Card implements Parcelable {
                 ", label='" + label + '\'' +
                 ", photoId='" + photoId + '\'' +
                 ", isSelected='" + isSelected + '\'' +
-                ", pronunciation='" + pronunciation + '\''+
+                ", pronunciation='" + pronunciation + '\'' +
                 '}';
     }
-    public Card(int id, String filename, String photoId, int imageLocation, String pronunciation) {
-        this.key = this.hashCode();
-        this.photoId = photoId;
-        this.id = id;
-        this.label = filename;
-        this.resourceLocation = imageLocation;
-        this.pronunciation = pronunciation;
-    }
-
 }

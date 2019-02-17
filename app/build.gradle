@@ -30,8 +30,8 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview-selection:1.0.0-beta01'
-    implementation 'com.github.jrvansuita:PickImage:+'
+    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0-alpha01'
+    implementation 'com.github.jrvansuita:PickImage:2.2.4'
     implementation 'androidx.viewpager:viewpager:1.0.0'
 
 

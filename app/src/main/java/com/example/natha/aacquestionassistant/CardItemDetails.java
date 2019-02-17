@@ -8,10 +8,10 @@ import androidx.recyclerview.selection.ItemDetailsLookup;
  * An {@link ItemDetailsLookup.ItemDetails} that holds details about a {@link String} item like its position and its value.
  */
 
-public class CardItemDetails extends ItemDetailsLookup.ItemDetails {
+class CardItemDetails extends ItemDetailsLookup.ItemDetails {
 
-    private int position;
-    private Card item;
+    private final int position;
+    private final Card item;
 
     public CardItemDetails(int position, Card item) {
         this.position = position;
@@ -28,8 +28,7 @@ public class CardItemDetails extends ItemDetailsLookup.ItemDetails {
     public Object getSelectionKey() {
         return item.key;
     }
-
-    public Card getItem(){
+    public Card getItem() {
         return item;
     }
 }

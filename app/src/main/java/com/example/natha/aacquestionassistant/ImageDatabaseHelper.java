@@ -8,19 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
-public class ImageDatabaseHelper extends SQLiteOpenHelper {
+class ImageDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "imageDatabase";
     private static final int DATABASE_VERSION = 9;
     private static final String TABLE_IMAGES = "images";
     private static final String KEY_IMAGE_ID = "id";
@@ -28,11 +22,10 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_IMAGE_LOCATION = "imageLoc";
     private static final String KEY_IMAGE_SYMBOL = "symbol";
     private static final String KEY_VOCAB_PRONUNCIATION = "pronunciation";
-    private static final String KEY_IMAGE_GRAMMAR = "grammar";
     @SuppressLint("SdCardPath")
-    private static String DB_FILEPATH ="/data/data/com.example.natha.aacquestionassistant/databases/imageDatabase";
     private static ImageDatabaseHelper sInstance;
-    private SQLiteDatabase db;
+    private final SQLiteDatabase db;
+    private int size = 0;
 
     private ImageDatabaseHelper(Context context) {
         super(context, null, null, DATABASE_VERSION);
@@ -46,42 +39,17 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         return sInstance;
     }
 
-    /**
-     * Copies the database file at the specified location over the current
-     * internal application database.
-     */
-    public boolean importDatabase(Context context) throws IOException {
-
-        // Close the SQLiteOpenHelper so it will commit the created empty
-        // database to internal storage.
-        close();
-        InputStream f = context.getAssets().open("imageDatabase.db");
-        File oldDb = new File(DB_FILEPATH);
-        byte[] buffer = new byte[f.available()];
-        f.read(buffer);
-        if (oldDb.exists()) {
-            OutputStream out = new FileOutputStream(oldDb);
-            out.write(buffer);
-            // Access the copied database so SQLiteHelper will cache it and mark
-            // it as created.
-            getWritableDatabase().close();
-            return true;
-        }
-        return false;
-    }
-    private int size =0;
     int getSize() {
         return size;
     }
 
-    public List<String> getAll() {
+    public List<Card> getAll() {
         //SELECT symbol FROM IMAGES
 
-        List<String> result = new LinkedList<>();
-
+        List<Card> result = new LinkedList<>();
         String query =
-                String.format("SELECT %s FROM %s",
-                        KEY_IMAGE_SYMBOL, TABLE_IMAGES);
+                String.format("SELECT * FROM %s",
+                        TABLE_IMAGES);
 
         SQLiteDatabase db = getReadableDatabase();
         db.beginTransaction();
@@ -89,43 +57,52 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         try (Cursor c = db.rawQuery(query, null)) {
             if (c.moveToFirst()) {
                 do {
-                    result.add(c.getString(0));
+                    result.add(new Card(c.getInt(0),
+                            c.getString(2), c.getString(1),
+                            c.getInt(3), c.getString(4)));
                 } while (c.moveToNext());
             }
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to get images from database");
-
         } finally {
             db.endTransaction();
-
         }
         return result;
-
-
     }
 
     void searchImages(String searchQuery, List<Card> result) {
         String query;
-        if(searchQuery.length() == 0){
-           return;
-        }
-        if(searchQuery.length() == 1){
-            query = "SELECT * FROM images WHERE symbol = " + "'"+searchQuery+"'" +
-                            " OR symbol = "  + "'"+(searchQuery + "_lower_case")+ "'";
-        } else{
+        if (searchQuery.length() == 0) {
+            query = "SELECT * FROM images";
+       } else if ( searchQuery.matches("[^A-Za-z0-9]+")) {
+
+            query = "SELECT * FROM images WHERE symbol " + "LIKE '%" + searchQuery + "%'";
+          //          " OR symbol = " + "'" + (searchQuery + "_lower_case") + "'";
+        } else {
             query =
-            String.format("SELECT * FROM %s WHERE %s LIKE '%%%s%%' LIMIT 12",
-                     TABLE_IMAGES, KEY_IMAGE_SYMBOL, searchQuery, KEY_IMAGE_GRAMMAR);
-        }
+                    String.format("SELECT * FROM %s WHERE %s LIKE '%%%s%%'" +
+                            "order by " +
+                                    "case when "  +"symbol"  + " like " + "'"+searchQuery.charAt(0)+"%%' "
+                            + "then 1 else 2 end ",
+                            TABLE_IMAGES, KEY_IMAGE_SYMBOL, searchQuery);
+       }
 
 
         try (Cursor c = db.rawQuery(query, null)) {
             db.beginTransaction();
             if (c.moveToFirst()) {
                 do {
-                    //RIGHT HERE THE ID IS NOT BEING STORED
-
-                    result.add(new Card(c.getInt(0), c.getString(2),c.getString(1) ,c.getInt(3), c.getString(4)));
+                    int id = c.getInt(0);
+                    String filename = c.getString(2);
+                    int imageLoc = c.getInt(3);
+                    String pronunciation = c.getString(4);
+                   if(imageLoc == 1) {
+                       result.add(new Card(id, filename, filename + "_" + id,
+                               imageLoc, pronunciation));
+                   } else {
+                       result.add(new Card(id, filename, filename ,
+                               imageLoc, pronunciation));
+                   }
                 } while (c.moveToNext());
             }
         } catch (Exception e) {
@@ -158,7 +135,6 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
 
     void addImage(Card i) {
         size++;
-
         SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();
 
@@ -170,7 +146,6 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
             values.put(KEY_VOCAB_PRONUNCIATION, i.pronunciation);
             db.insertOrThrow(TABLE_IMAGES, null, values);
             db.setTransactionSuccessful();
-
         } catch (Exception e) {
             Log.d(TAG, "Error adding image to database");
 
@@ -193,10 +168,8 @@ public class ImageDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void customVocabActive(int id, String photoId){
-        String q = "SELECT COUNT(*) FROM images WHERE id = " + id + "and photoId = " +  photoId;
-    }
-    public  void deleteCustomVocab(int id){
+
+    public void deleteCustomVocab(int id) {
         String q = "DELETE FROM images WHERE id = " + id;
         db.execSQL(q);
 

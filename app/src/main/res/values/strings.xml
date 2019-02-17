@@ -3,7 +3,25 @@
     <string name="button">Submit</string>
     <string name="enter_phrase">Enter Phrase</string>
     <string name="item">Item Name</string>
-    <string name="submit">Submit</string>
-    <string name="edit">Edit</string>
     <string name="no_data_available">No Cards</string>
+    <string name="card">Card</string>
+    <string name="create_new_word">Create New Word</string>
+    <string name="add_card">Add Card</string>
+    <string name="delete">Delete</string>
+    <string name="remove_vocab_from_dictionary">Remove vocab from dictionary?</string>
+    <string name="add_new_vocab_to_dictionary">Add new vocab to dictionary?</string>
+    <string name="ok">OK</string>
+    <string name="question">Question</string>
+    <string name="yes_no">Yes No</string>
+    <string name="preview_speech">Preview Speech</string>
+    <string name="name">Name</string>
+    <string name="submit">Submit</string>
+    <string name="select_image">Select Image</string>
+    <string name="pronunciation">Pronunciation</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_pronunciation">Enter Pronunciation</string>
+    <string name="yes_upper_case">YES</string>
+    <string name="no_upper_case">NO</string>
+    <string name="edit">Edit</string>
+    <string name="image">image</string>
 </resources>

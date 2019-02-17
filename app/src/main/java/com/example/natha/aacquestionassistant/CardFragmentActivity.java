@@ -1,8 +1,13 @@
 package com.example.natha.aacquestionassistant;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -21,25 +26,19 @@ import java.util.Objects;
 
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import static android.content.res.AssetManager.ACCESS_STREAMING;
 
 public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity {
-    final int PAGE_COUNT = 2;
-    private PagerAdapter pagerAdapter;
-    private String tabTitles[] = new String[]{"Question", "Yes No"};
-    private Context context;
     private List<Fragment> fragments;
-    BottomappbarCallbackInterface bottomappbarCallbackInterface;
     private ImageDatabaseHelper idh;
-
-
-
-
-
+    private boolean locked = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -47,109 +46,108 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         super.setContentView(R.layout.main);
 
         BottomAppBar bab = findViewById(R.id.bottomAppBar);
+
         bab.replaceMenu(R.menu.contextual_menu);
 
         fragments = new LinkedList<>();
 
-        //initialsie the pager
+        //initialise the pager
         this.initialisePaging();
         idh = ImageDatabaseHelper.getInstance(this.getApplicationContext());
 
-        if(idh.getSize() == 0) {
+        if (idh.getSize() == 0) {
             setupDB();
         }
 
     }
 
-    private boolean locked = false;
-
-
-    public void setBottomappbarCallbackInterface(final BottomappbarCallbackInterface listener){
-        bottomappbarCallbackInterface = listener;
-        final ActionMenuItemView  newItemCreate = findViewById(R.id.new_item_create);
-        final ActionMenuItemView  itemEdit = findViewById(R.id.item_edit);
+    public void setBottomappbarCallbackInterface(final BottomappbarCallbackInterface listener) {
+        final ActionMenuItemView newItemCreate = findViewById(R.id.new_item_create);
+        final ActionMenuItemView itemEdit = findViewById(R.id.item_edit);
         final ActionMenuItemView itemDelete = findViewById(R.id.item_delete);
         final ActionMenuItemView newcard = findViewById(R.id.add_card);
-
-
         final BottomAppBar bottomAppBar = findViewById(R.id.bottomAppBar);
+
         bottomAppBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 locked = !locked;
-
                 bottomAppBar.setNavigationIcon(locked ? R.drawable.locked : R.drawable.unlocked);
+                Objects.requireNonNull(bottomAppBar.getNavigationIcon()).setAlpha(locked ? 158 : 255);
 
-                Objects.requireNonNull(bottomAppBar.getNavigationIcon()).setAlpha(locked ? 158:255);
-                newItemCreate.setAlpha(locked? .5f:1f);
-                itemEdit.setAlpha(locked? .5f:1f);
-                itemDelete.setAlpha(locked? .5f:1f);
-
-                newcard.setAlpha(locked? .5f:1f);
-
-
+                if(newItemCreate != null)
+                    newItemCreate.setAlpha(locked ? .5f : 1f);
+                itemEdit.setAlpha(locked ? .5f : 1f);
+                itemDelete.setAlpha(locked ? .5f : 1f);
+                newcard.setAlpha(locked ? .5f : 1f);
                 listener.toggleUiLockClick();
-
-
             }
         });
 
-        bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener(){
+        bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-
-
                 listener.menuClick(item.getItemId());
-
-
                 return false;
             }
         });
 
     }
+
     public void onSaveInstanceState(Bundle outstate) {
         super.onSaveInstanceState(outstate);
         //getSupportFragmentManager().putFragment(outstate,"myfragment",fragments.get(0));
-
     }
 
     public void onRestoreInstanceState(Bundle instate) {
         super.onSaveInstanceState(instate);
         fragments.set(0, getSupportFragmentManager().getFragment(instate, "myfragment"));
-
     }
 
     private void initialisePaging() {
-
-
         fragments.add(Fragment.instantiate(this, CardTablePageFragment.class.getName()));
-
         fragments.add(Fragment.instantiate(this, YesNoPageFragment.class.getName()));
-        this.pagerAdapter = new CardPagerAdapter(super.getSupportFragmentManager(), fragments);
-        //
+        PagerAdapter pagerAdapter = new CardPagerAdapter(super.getSupportFragmentManager(), fragments);
         ViewPager pager = super.findViewById(R.id.viewpager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
-
         tabLayout.setupWithViewPager(pager, true);
-        pager.setAdapter(this.pagerAdapter);
-
-        tabLayout.getTabAt(0).setText("Question");
-                tabLayout.getTabAt(1).setText("Yes No");
-
-
-
+        pager.setAdapter(pagerAdapter);
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setText("Question");
+        Objects.requireNonNull(tabLayout.getTabAt(1)).setText("Yes No");
     }
 
     public void pressYesNo(View v) {
+        ConstraintLayout cv = ((ConstraintLayout) v.getParent());
+        CardView other;
+        int otherColor;
+
+        if(v.getId() == R.id.cv){
+            other = cv.findViewById(R.id.cv1);
+            otherColor = R.color.red;
+        } else{
+            other = cv.findViewById(R.id.cv);
+            otherColor = R.color.green;
+
+        }
+
+
+        Context c = this.getApplicationContext();
+        Resources r = c.getResources();
+        Resources.Theme theme = c.getTheme();
+
+        Drawable d = VectorDrawableCompat.create(r, R.drawable.outline, theme);
+
+        v.setBackground(d);
+        other.setBackgroundColor(otherColor);
         TextView tv = v.findViewWithTag("name");
         String s = tv.getText().toString();
         TextToSpeechManager.speak(s);
     }
 
 
-    public void setupDB() {
 
-        String line = "";
+    private void setupDB() {
+        String line;
         String split = ",";
         BufferedReader b = null;
         try {
@@ -164,9 +162,9 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
             }
 
             // read in custom vocab
-            FileOperations.readNewVocab(this.getApplicationContext() , idh);
+            FileOperations.readNewVocab(this.getApplicationContext(), idh);
         } catch (FileNotFoundException e) {
-            Log.e("CSV parsing: ", String.valueOf(e.getStackTrace()));
+            Log.e("CSV parsing: ", e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -174,13 +172,11 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
                 try {
                     b.close();
                 } catch (IOException e) {
-                    Log.e("CSV parsing: ", String.valueOf(e.getStackTrace()));
+                    Log.e("CSV parsing: ", e.getMessage());
                 }
             }
         }
     }
-
-
 }
 
 

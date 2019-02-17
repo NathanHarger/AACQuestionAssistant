@@ -4,51 +4,36 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.selection.SelectionPredicates;
-import androidx.recyclerview.selection.SelectionTracker;
-import androidx.recyclerview.selection.StorageStrategy;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import static android.content.res.AssetManager.ACCESS_STREAMING;
 import static com.example.natha.aacquestionassistant.TextToSpeechManager.tts;
 
 public class CardTablePageFragment extends Fragment {
-    static final int SELECT_IMAGE_REQUEST = 1;
-    static final int NEW_VOCAB_REQUEST = 1;
-    List<Card> cards = new LinkedList<>();
-    CardRecyclerViewAdapter adapter;
-    int clickedCardIndex = 0;
-    Parcelable recyclerViewState;
-    private ItemTouchHelper itemTouchHelper;
+    private static final int SELECT_IMAGE_REQUEST = 1;
+    private static final int NEW_VOCAB_REQUEST = 1;
+    private final List<Card> cards = new LinkedList<>();
+    private CardRecyclerViewAdapter adapter;
+    private int clickedCardIndex;
     private boolean locked = false;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Parcelable p = null;
@@ -61,7 +46,6 @@ public class CardTablePageFragment extends Fragment {
         final View view = inflater.inflate(R.layout.activity_main, container, false);
         final RecyclerView rv = view.findViewById(R.id.cardGrid);
 
-        //Move this up to main actvity
         ImageDatabaseHelper.getInstance(this.getContext());
 
         adapter = new CardRecyclerViewAdapter(cards, new CustomItemClickListener() {
@@ -76,7 +60,7 @@ public class CardTablePageFragment extends Fragment {
                     ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, 0, 0);
                     startActivityForResult(i, SELECT_IMAGE_REQUEST, options.toBundle());
 
-                }else if(v.getTag().equals("new") && !locked){
+                } else if (v.getTag().equals("new") && !locked) {
                     clickedCardIndex = position;
                     Intent i = new Intent(v.getContext(), NewVocabActivity.class);
                     ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, 0, 0);
@@ -96,7 +80,6 @@ public class CardTablePageFragment extends Fragment {
                         }
                     }
 
-
                     adapter.setSelected(c.key, true);
                     Log.d("adf", "clicked position:" + position);
                     if (v.getTag().equals("cv") && !c.label.equals("") && locked) {
@@ -104,20 +87,17 @@ public class CardTablePageFragment extends Fragment {
                             TextToSpeechManager.speak(c.label);
                         } else {
                             TextToSpeechManager.speak(c.pronunciation);
-
                         }
+                    } else if (locked) {
+                        Toast.makeText(v.getContext(), "Card Edit Locked Out", Toast.LENGTH_SHORT).show();
                     }
-
-                 else if (locked) {
-                    Toast.makeText(v.getContext(), "Card Edit Locked Out", Toast.LENGTH_SHORT).show();
                 }
-            }
             }
 
 
         }, rv, getContext());
 
-        final ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter, this.getContext());
+        final SimpleItemTouchHelperCallback callback = new SimpleItemTouchHelperCallback(adapter, this.getContext());
 
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
 
@@ -135,54 +115,38 @@ public class CardTablePageFragment extends Fragment {
         }
 
         TextToSpeechManager.initTextToSpeech(getContext());
-
         rv.setAdapter(adapter);
-
         touchHelper.attachToRecyclerView(rv);
         adapter.setTouchHelper(touchHelper);
-        adapter.setTouchHelperCallback((SimpleItemTouchHelperCallback) callback);
+        adapter.setTouchHelperCallback(callback);
 
         BottomappbarCallbackInterface bottomappbarCallbackInterface = new BottomappbarCallbackInterface() {
-            @Override
-            public void addButtonClick() {
 
-
-                if(!locked){
-                    adapter.addItem(new Card("",""));
-                } else{
-                    Toast.makeText(getContext(), "Add Card Locked Out", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
-            public void toggleUiLockClick(){
+            public void toggleUiLockClick() {
                 locked = !locked;
                 adapter.setLocked(locked);
 
-                if(locked)
+                if (locked)
                     adapter.clearSelection();
-                Log.i("Bottom bar navigation:","" + (locked?"locked":"unlocked" ));
+                Log.i("Bottom bar navigation:", "" + (locked ? "locked" : "unlocked"));
             }
 
-            public void menuClick(int id){
-                if(!locked) {
+            public void menuClick(int id) {
+                if (!locked) {
                     adapter.menuClick(id);
-                } else{
+                } else {
                     Toast.makeText(getContext(), "Locked Out", Toast.LENGTH_SHORT).show();
                 }
-
             }
         };
 
 
-
-
-        ((CardFragmentActivity)getActivity()).setBottomappbarCallbackInterface(bottomappbarCallbackInterface);
+        ((CardFragmentActivity) getActivity()).setBottomappbarCallbackInterface(bottomappbarCallbackInterface);
         return view;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outstate) {
+    public void onSaveInstanceState(@NonNull Bundle outstate) {
         Parcelable listState = adapter.getLayoutManager().onSaveInstanceState();
         outstate.putParcelable("listState", listState);
         outstate.putParcelableArrayList("dataset", new ArrayList<>(cards));
@@ -191,37 +155,52 @@ public class CardTablePageFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SELECT_IMAGE_REQUEST || requestCode == NEW_VOCAB_REQUEST) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (data.hasExtra("name")) {
-                    int id = data.getIntExtra("id", -1);
-                    String returnValue = data.getStringExtra("name");
-                    String returnImage = data.getStringExtra("filename");
-                    int resourceLocation = data.getIntExtra("resourceLocation",0);
-                    String pronunciation = data.getStringExtra("pronunciation");
-                    adapter.setItemTag(clickedCardIndex, "cv");
+        if (resultCode == Activity.RESULT_OK) {
+            adapter.setItemTag(clickedCardIndex);
+            if (data.hasExtra("name")) {
+                int id = data.getIntExtra("id", -1);
+                String returnValue = data.getStringExtra("name");
+                String returnImage = data.getStringExtra("filename");
+                int resourceLocation = data.getIntExtra("resourceLocation", 0);
+                String pronunciation = data.getStringExtra("pronunciation");
+                String label = returnValue.replace("_", " ");
+                label = label.replaceAll("[0-9]", "");
+                adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation, pronunciation, id);
+            }
 
-                    String label = returnValue.replace("_", " ");
-                    label = label.replaceAll("[0-9]", "");
-
-                    adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation,pronunciation,id);
-                } else {
-                    adapter.setItemTag(clickedCardIndex, "cv");
-                }
-
-                if(data.hasExtra("deletedList")){
-                    ArrayList<String> deletedVocab = (ArrayList<String>) data.getSerializableExtra("deletedList");
-                    adapter.deleteInvalidVocab(deletedVocab);
-                }
+            if (data.hasExtra("deletedList")) {
+                ArrayList<Integer> deletedVocab = (ArrayList<Integer>) data.getSerializableExtra("deletedList");
+                adapter.deleteInvalidVocab(deletedVocab);
             }
         }
     }
+    public static Bundle mBundleRecyclerViewState;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
+    public void onPause(){
+        super.onPause();
+        mBundleRecyclerViewState = new Bundle();
+
+        mBundleRecyclerViewState.putParcelableArrayList(KEY_RECYCLER_STATE, new ArrayList<>(cards));
+
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        // restore RecyclerView state
+        if (mBundleRecyclerViewState != null) {
+            ArrayList<Card> listState = mBundleRecyclerViewState.getParcelableArrayList(KEY_RECYCLER_STATE);
+            adapter.submitList(listState);
+        }
+    }
+
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         tts.shutdown();
     }
-
-
 }

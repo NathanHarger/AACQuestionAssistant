@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 
 public class PageFragment extends Fragment {
 
-    public static final String ARG_PAGE = "ARG_PAGE";
+    private static final String ARG_PAGE = "ARG_PAGE";
     protected int mPage;
 
     public static PageFragment newInstance(int page) {
