@@ -334,8 +334,10 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         Resources resources = c.getResources();
         Card card = cards.get(i);
 
-        // if false the image has been deleted
-        FileOperations.setImageSource(c, card, cardViewHolder.image);
+        cardViewHolder.noImageLabel.setText(cardViewHolder.label.getText());
+
+        FileOperations.setImageSource(c, card, cardViewHolder.image, cardViewHolder.noImageLabel);
+
 
 
         if (card.isSelected) {
@@ -388,12 +390,14 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         final TextView label;
         final ImageView image;
         final boolean isSelected;
+        final TextView noImageLabel;
 
         CardViewHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cv);
             label = itemView.findViewById(R.id.textView);
             image = itemView.findViewById(R.id.imageView);
+            noImageLabel = itemView.findViewById(R.id.noImageText);
             isSelected = false;
         }
 

@@ -6,7 +6,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,7 +36,7 @@ class FileOperations {
         }
     }
 
-    private static void loadImageFromStorage(Context context, String filename, ImageView img) {
+    private static void loadImageFromStorage(Context context, String filename, ImageView img, TextView noImageText) {
         try {
             ContextWrapper cw = new ContextWrapper(context);
             File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -43,13 +45,17 @@ class FileOperations {
             if (f.exists()) {
                 b = BitmapFactory.decodeStream(new FileInputStream(f));
                 img.setImageBitmap(b);
+            } else {
+                noImageText.setVisibility(View.VISIBLE);
+                img.setImageBitmap(null);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    static void setImageSource(Context context, Card fileInfo, ImageView imageSource) {
+    static void setImageSource(Context context, Card fileInfo, ImageView imageSource, TextView noImageText) {
+
         int resourceLoc = fileInfo.resourceLocation;
         if (resourceLoc == 0) {
             Resources resources = context.getResources();
@@ -57,7 +63,8 @@ class FileOperations {
                     context.getPackageName());
             imageSource.setImageResource(resourceId);
         } else {
-            loadImageFromStorage(context, (fileInfo.photoId), imageSource);
+
+            loadImageFromStorage(context, (fileInfo.photoId), imageSource, noImageText);
         }
     }
 
@@ -70,7 +77,12 @@ class FileOperations {
         String photoId = "";
         try {
 
-            photoId = filename + "_" + fileInfo.id;
+            if (image == null) {
+                photoId = "";
+
+            } else {
+                photoId = filename + "_" + fileInfo.id;
+            }
             fileInfo.photoId = photoId;
             b = new BufferedWriter(new FileWriter(mypath, true));
             if (mypath.length() == 0) {
@@ -79,7 +91,9 @@ class FileOperations {
                 b.append("\n").append(String.valueOf(fileInfo.id)).append(",").append(filename).append(",").append("1,").append(fileInfo.pronunciation);
             }
             ImageDatabaseHelper.getInstance(context).addImage(fileInfo);
-            saveToInternalStorage(image, photoId, context);
+
+            if (image != null)
+                saveToInternalStorage(image, photoId, context);
         } catch (FileNotFoundException e) {
             Log.e("CSV parsing: ", e.getMessage());
         } catch (

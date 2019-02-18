@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.LinkedList;
 import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,7 +74,12 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
     public void onBindViewHolder(@NonNull final CardViewHolder cardViewHolder, int i) {
         Card curr = cards.get(i);
         Context c = cardViewHolder.cv.getContext();
-        FileOperations.setImageSource(c, curr, cardViewHolder.image);
+        cardViewHolder.noImageLabel.setText(curr.label);
+
+
+        FileOperations.setImageSource(c, curr, cardViewHolder.image, cardViewHolder.noImageLabel);
+
+
         curr.label = curr.label.replace("_", " ").replaceAll("[0-9]", "");
         if (!curr.pronunciation.equals("")) {
             curr.label += " (" + curr.pronunciation + ")";
@@ -86,12 +93,14 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
         final ImageView image;
         final TextView text;
         final ImageButton deleteCard;
+        final TextView noImageLabel;
         CardViewHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cv);
-            image = itemView.findViewById(R.id.imageView);
+            image = itemView.findViewById(R.id.imageViewImageSelection);
             text = itemView.findViewById(R.id.image_selection_text);
             deleteCard = itemView.findViewById(R.id.imageSelectionDelete);
+            noImageLabel = itemView.findViewById(R.id.noImageTextImageSelection);
         }
     }
 }
