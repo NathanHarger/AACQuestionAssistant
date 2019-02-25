@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ImageSelectionActivity extends AppCompatActivity {
     private static final int CREATE_NEW_VOCAB = 3;
     private final List<Card> images = new LinkedList<>();
-    private final ArrayList<Integer> deletedVocab = new ArrayList<>();
+    private final ArrayList<Card> deletedVocab = new ArrayList<>();
     private ImageSelectionRecyclerViewAdapter adapter;
     private ImageDatabaseHelper idh;
     private RecyclerView rv;
@@ -114,7 +114,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
             FileOperations.deleteCustomVocab(deletedCard.photoId, v.getContext());
             deleteNewVocabDialogFragment.dismiss();
             adapter.remove(deletedCard);
-            deletedVocab.add(deletedCard.id);
+            deletedVocab.add(deletedCard);
         }
     }
 

@@ -74,13 +74,14 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
     public void onBindViewHolder(@NonNull final CardViewHolder cardViewHolder, int i) {
         Card curr = cards.get(i);
         Context c = cardViewHolder.cv.getContext();
+        curr.label = curr.label.replace("_", " ").replaceAll("[0-9]", "");
+
         cardViewHolder.noImageLabel.setText(curr.label);
 
 
         FileOperations.setImageSource(c, curr, cardViewHolder.image, cardViewHolder.noImageLabel);
 
 
-        curr.label = curr.label.replace("_", " ").replaceAll("[0-9]", "");
         if (!curr.pronunciation.equals("")) {
             curr.label += " (" + curr.pronunciation + ")";
         }

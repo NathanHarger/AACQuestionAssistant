@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/add_card"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/add_card"
+        android:titleCondensed="Add Card"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/item_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="@string/edit"
+        android:titleCondensed="Edit"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/item_delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/delete"
+        android:titleCondensed="Delete"
+
+        app:showAsAction="ifRoom|withText" />
     <item
         android:id="@+id/new_item_create"
         android:icon="@drawable/book_plus"
@@ -9,24 +29,5 @@
         app:showAsAction="ifRoom|withText">
 
     </item>
-    <item
-        android:id="@+id/add_card"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/add_card"
-        android:titleCondensed="Add Card"
-        app:showAsAction="always|withText"/>
-    <item
-        android:id="@+id/item_edit"
-        android:icon="@android:drawable/ic_menu_edit"
-        android:title="@string/edit"
-        android:titleCondensed="Edit"
-        app:showAsAction="always|withText"/>
-    <item
-        android:id="@+id/item_delete"
-        android:icon="@android:drawable/ic_menu_delete"
-        android:title="@string/delete"
-        android:titleCondensed="Delete"
-
-        app:showAsAction="always|withText"/>
 
 </menu>
