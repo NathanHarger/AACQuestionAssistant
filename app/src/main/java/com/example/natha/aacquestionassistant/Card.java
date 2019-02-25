@@ -99,10 +99,8 @@ public class Card implements Parcelable {
         }
 
         Card c = (Card) o;
-        if(id == 0){
-            return c.key == this.key;
-        }
-        return c.id == this.id;
+
+        return this.label.equals(c.label) && this.pronunciation.equals(c.pronunciation);
     }
 
     @NonNull

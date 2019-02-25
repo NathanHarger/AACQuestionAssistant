@@ -56,10 +56,7 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
         //    return;
        // }
 
-        if (selectedImage == null) {
-            Toast.makeText(this, "Select an Image", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
         int id = idh.getSize() + 1;
         String label = word.getText().toString().replace(" ", "_");
         String fileid = FileOperations.writeNewVocabToSymbolInfo(getApplicationContext(),
@@ -97,6 +94,7 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
         if (r.getError() == null) {
             selectedImage = r.getBitmap();
             ((ImageView) findViewById(R.id.imageView2)).setImageBitmap(selectedImage);
+
         } else {
             Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
         }

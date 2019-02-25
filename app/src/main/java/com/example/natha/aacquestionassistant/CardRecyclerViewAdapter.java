@@ -210,11 +210,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
-    private void deleteCard(Card c) {
-        int removedIndex = cards.indexOf(c);
-        cards.remove(c);
-        notifyItemRemoved(removedIndex);
-    }
+    private ArrayList<Card> deletedVocab = new ArrayList<>();
 
     private void deleteSelected() {
 
@@ -300,7 +296,6 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     @NonNull
     @Override
     public CardViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, final int i) {
-
         final View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_layout, viewGroup, false);
         final CardViewHolder cvh = new CardViewHolder(v);
         final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
@@ -326,16 +321,29 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         return cvh;
     }
 
-    public void onBindViewHolder(@NonNull final CardViewHolder cardViewHolder, int i) {
+    private void deleteCard(Card c) {
+        int index = cards.indexOf(c);
+        cards.remove(c);
+        notifyItemRemoved(index);
+        notifyItemRangeChanged(index, cards.size());
+    }
 
-        cardViewHolder.label.setText(cards.get(i).label);
+    public void onBindViewHolder(@NonNull final CardViewHolder cardViewHolder, int i) {
+        Card card = cards.get(i);
+
+        //if(deletedVocab.contains(cards.get(i).id)){
+        //    card.label = "";
+        //  cards.set(i,card);
+//
+        //    }
+        cardViewHolder.label.setText(card.label);
 
         Context c = cardViewHolder.cv.getContext();
         Resources resources = c.getResources();
-        Card card = cards.get(i);
+        cardViewHolder.noImageLabel.setText(card.label);
 
-        // if false the image has been deleted
-        FileOperations.setImageSource(c, card, cardViewHolder.image);
+        FileOperations.setImageSource(c, card, cardViewHolder.image, cardViewHolder.noImageLabel);
+
 
 
         if (card.isSelected) {
@@ -351,22 +359,30 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
     }
 
-    public void deleteInvalidVocab(ArrayList<Integer> deletedVocab) {
+    public void setInvalidVocab(ArrayList<Card> deletedVocab) {
+        this.deletedVocab = deletedVocab;
+
+    }
+
+    public void deleteInvalidVocab() {
+        if (deletedVocab == null) {
+            return;
+        }
         ArrayList<Card> cardsToDelete = new ArrayList<>();
-        for (int curr : deletedVocab) {
+        for (Card curr : deletedVocab) {
             for (int i = 0; i < cards.size(); i++) {
                 Card currCard = cards.get(i);
-                if (currCard.id == curr) {
-                    cardsToDelete.add(currCard);
+                if (currCard.equals(curr)) {
+                    cardsToDelete.add(curr);
                 }
             }
-
+        }
             for (Card i : cardsToDelete) {
                 deleteCard(i);
 
             }
         }
-    }
+
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
@@ -388,12 +404,14 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         final TextView label;
         final ImageView image;
         final boolean isSelected;
+        final TextView noImageLabel;
 
         CardViewHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cv);
             label = itemView.findViewById(R.id.textView);
             image = itemView.findViewById(R.id.imageView);
+            noImageLabel = itemView.findViewById(R.id.noImageText);
             isSelected = false;
         }
 

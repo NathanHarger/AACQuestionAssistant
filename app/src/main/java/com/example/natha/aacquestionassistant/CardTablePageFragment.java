@@ -150,7 +150,6 @@ public class CardTablePageFragment extends Fragment {
         Parcelable listState = adapter.getLayoutManager().onSaveInstanceState();
         outstate.putParcelable("listState", listState);
         outstate.putParcelableArrayList("dataset", new ArrayList<>(cards));
-        //mListState = adapter..onSaveInstanceState();
     }
 
     @Override
@@ -169,8 +168,8 @@ public class CardTablePageFragment extends Fragment {
             }
 
             if (data.hasExtra("deletedList")) {
-                ArrayList<Integer> deletedVocab = (ArrayList<Integer>) data.getSerializableExtra("deletedList");
-                adapter.deleteInvalidVocab(deletedVocab);
+                ArrayList<Card> deletedVocab = (ArrayList<Card>) data.getSerializableExtra("deletedList");
+                adapter.setInvalidVocab(deletedVocab);
             }
         }
     }
@@ -194,6 +193,7 @@ public class CardTablePageFragment extends Fragment {
             ArrayList<Card> listState = mBundleRecyclerViewState.getParcelableArrayList(KEY_RECYCLER_STATE);
             adapter.submitList(listState);
         }
+        adapter.deleteInvalidVocab();
     }
 
 

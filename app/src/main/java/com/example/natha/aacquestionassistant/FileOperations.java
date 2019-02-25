@@ -6,7 +6,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 
 class FileOperations {
 
@@ -34,7 +35,7 @@ class FileOperations {
         }
     }
 
-    private static void loadImageFromStorage(Context context, String filename, ImageView img) {
+    private static void loadImageFromStorage(Context context, String filename, ImageView img, TextView noImageText) {
         try {
             ContextWrapper cw = new ContextWrapper(context);
             File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -43,21 +44,27 @@ class FileOperations {
             if (f.exists()) {
                 b = BitmapFactory.decodeStream(new FileInputStream(f));
                 img.setImageBitmap(b);
+            } else {
+                noImageText.setVisibility(View.VISIBLE);
+                img.setImageBitmap(null);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    static void setImageSource(Context context, Card fileInfo, ImageView imageSource) {
+    static void setImageSource(Context context, Card fileInfo, ImageView imageSource, TextView noImageText) {
+
         int resourceLoc = fileInfo.resourceLocation;
         if (resourceLoc == 0) {
             Resources resources = context.getResources();
             final int resourceId = resources.getIdentifier(fileInfo.photoId, "drawable",
                     context.getPackageName());
             imageSource.setImageResource(resourceId);
+            noImageText.setVisibility(View.GONE);
         } else {
-            loadImageFromStorage(context, (fileInfo.photoId), imageSource);
+
+            loadImageFromStorage(context, (fileInfo.photoId), imageSource, noImageText);
         }
     }
 
@@ -70,16 +77,23 @@ class FileOperations {
         String photoId = "";
         try {
 
-            photoId = filename + "_" + fileInfo.id;
+            if (image == null) {
+                photoId = "";
+
+            } else {
+                photoId = filename + "-" + fileInfo.pronunciation;
+            }
             fileInfo.photoId = photoId;
             b = new BufferedWriter(new FileWriter(mypath, true));
             if (mypath.length() == 0) {
-                b.append(String.valueOf(fileInfo.id)).append(",").append(filename).append(",").append("1,").append(fileInfo.pronunciation);
+                b.append(filename).append(",").append("1,").append(fileInfo.pronunciation);
             } else {
-                b.append("\n").append(String.valueOf(fileInfo.id)).append(",").append(filename).append(",").append("1,").append(fileInfo.pronunciation);
+                b.append("\n").append(filename).append(",").append("1,").append(fileInfo.pronunciation);
             }
             ImageDatabaseHelper.getInstance(context).addImage(fileInfo);
-            saveToInternalStorage(image, photoId, context);
+
+            if (image != null)
+                saveToInternalStorage(image, photoId, context);
         } catch (FileNotFoundException e) {
             Log.e("CSV parsing: ", e.getMessage());
         } catch (
@@ -99,9 +113,14 @@ class FileOperations {
 
     static void deleteCustomVocab(String filename, Context context) {
         int targetId;
-        String[] filenameTokens = filename.split("_");
-        targetId = Integer.parseInt(filenameTokens[1]);
-        String targetFilename = filenameTokens[0];
+        String[] filenameTokens = filename.split("-");
+        String filenameArray = filenameTokens[0];
+
+        String pronunciationArray = filenameTokens.length == 2 ? filenameTokens[1] : "";
+
+        String targetFilename = filenameArray;
+        String targetPronunciation = pronunciationArray;
+
         ContextWrapper cw = new ContextWrapper(context);
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
         File f = new File(directory, "fringeVocab.csv");
@@ -110,8 +129,8 @@ class FileOperations {
             String line;
             while ((line = fr.readLine()) != null) {
                 String[] tokens = line.split(",");
-                String currFilename = tokens[1];
-                int currId = Integer.parseInt(tokens[0]);
+                String currFilename = tokens[0];
+                String pronunciation = tokens.length == 3 ? tokens[2] : "";
 
                 //if the filename don't match write  to file
                 if (!currFilename.equals(targetFilename)) {
@@ -119,7 +138,8 @@ class FileOperations {
                     fw.append("\n");
 
                 } else {
-                    if (currId == targetId) {
+                    // if name and
+                    if (targetPronunciation.equals(pronunciation)) {
                         File image = new File(directory, filename + ".png");
                         image.delete();
                     } else {
@@ -150,8 +170,8 @@ class FileOperations {
             b = new BufferedReader(new FileReader(mypath));
             while ((line = b.readLine()) != null) {
                 String[] tokens = line.split(",");
-                int id = Integer.parseInt(tokens[0]);
-                idh.addImage(new Card(id, Arrays.copyOfRange(tokens, 1, tokens.length)));
+                int id = -1;
+                idh.addImage(new Card(id, tokens));
             }
         } catch (FileNotFoundException e) {
             Log.e("CSV parsing: ", e.getMessage());

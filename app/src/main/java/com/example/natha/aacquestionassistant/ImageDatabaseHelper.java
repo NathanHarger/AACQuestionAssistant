@@ -97,7 +97,7 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
                     int imageLoc = c.getInt(3);
                     String pronunciation = c.getString(4);
                    if(imageLoc == 1) {
-                       result.add(new Card(id, filename, filename + "_" + id,
+                       result.add(new Card(id, filename, filename + "-" + pronunciation,
                                imageLoc, pronunciation));
                    } else {
                        result.add(new Card(id, filename, filename ,
