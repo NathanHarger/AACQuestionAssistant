@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -21,6 +21,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 class FileOperations {
+
+    private static Bitmap webImage = null;
 
     private static void saveToInternalStorage(Bitmap bitmapImage, String filename, Context context) {
         ContextWrapper cw = new ContextWrapper(context);
@@ -62,10 +64,21 @@ class FileOperations {
                     context.getPackageName());
             imageSource.setImageResource(resourceId);
             noImageText.setVisibility(View.GONE);
-        } else {
+        } else if (resourceLoc == 1) {
 
             loadImageFromStorage(context, (fileInfo.photoId), imageSource, noImageText);
+        } else {
+            getPhotoFromWeb(((OnlineImageCard) fileInfo).url, imageSource);
         }
+    }
+
+    static void getPhotoFromWeb(final String url, final ImageView image) {
+
+        DownloadImageTask downloadImageTask = new DownloadImageTask(image);
+        downloadImageTask.execute(url);
+
+
+        //webImage = null;
     }
 
     static String writeNewVocabToSymbolInfo(Context context, Card fileInfo, Bitmap image) {

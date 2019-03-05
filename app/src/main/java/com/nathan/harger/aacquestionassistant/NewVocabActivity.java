@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,9 +19,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 
 public class NewVocabActivity extends AppCompatActivity implements IPickResult {
+    private final int ONLINE_IMAGE = 3;
+    protected Bitmap selectedImage;
     private PickImageDialog pickImageDialog;
     private ImageDatabaseHelper idh;
-    private Bitmap selectedImage;
     private String pronunciation = "";
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,21 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
     }
 
     public void imageSelect(View v) {
+
         pickImageDialog = PickImageDialog.build(new PickSetup()).show(this);
+    }
+
+    public void onlineImageSelect(View v) {
+
+        Intent i = new Intent(this, OnlineImageSelectionActivity.class);
+        EditText word = findViewById(R.id.editText2);
+        if (word.getText().length() == 0) {
+            Toast.makeText(this, "Enter vocab name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //extra.putString();
+        i.putExtra("search", word.getText().toString());
+        startActivityForResult(i, ONLINE_IMAGE);
     }
 
     public void submitVocab(View v) {
@@ -51,11 +66,6 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
         EditText word = findViewById(R.id.editText2);
         EditText pronunciationEditText = findViewById(R.id.pronunciation);
         String pronunciation = pronunciationEditText.getText().toString();
-        //if (word.getText().toString().length() < 3) {
-        //    Toast.makeText(this, "Vocab word must be longer than 3", Toast.LENGTH_SHORT).show();
-        //    return;
-       // }
-
 
         int id = idh.getSize() + 1;
         String label = word.getText().toString().replace(" ", "_");
@@ -72,7 +82,6 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
     }
 
 
-
     @Override
     public void onBackPressed() {
         Intent output = new Intent();
@@ -86,7 +95,6 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
             TextToSpeechManager.speak(editText.getText());
         }
     }
-
 
 
     @Override
@@ -109,5 +117,22 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
         super.onSaveInstanceState(outstate);
 
     }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ONLINE_IMAGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                DownloadImageTask downloadImageTask = new DownloadImageTask((ImageView) findViewById(R.id.imageView2));
+                final String url = data.getStringExtra("url");
+                downloadImageTask.execute(url);
+
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.selection.ItemDetailsLookup;
@@ -28,6 +28,7 @@ class CardItemDetails extends ItemDetailsLookup.ItemDetails {
     public Object getSelectionKey() {
         return item.key;
     }
+
     public Card getItem() {
         return item;
     }

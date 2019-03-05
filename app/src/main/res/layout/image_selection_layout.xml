@@ -13,13 +13,13 @@
         android:ems="10"
         android:hint="@string/item"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/imageSelectionGrid"
-        app:layout_constraintStart_toStartOf="@+id/imageSelectionGrid"
+        app:layout_constraintBottom_toTopOf="@+id/onlineImageSelectionGrid"
+        app:layout_constraintStart_toStartOf="@+id/onlineImageSelectionGrid"
         app:layout_constraintTop_toTopOf="parent"
         android:importantForAutofill="no" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/imageSelectionGrid"
+        android:id="@+id/onlineImageSelectionGrid"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -33,11 +33,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/imageSelectionGrid"
-        app:layout_constraintEnd_toStartOf="@+id/imageSelectionGrid"
+        app:layout_constraintBottom_toTopOf="@+id/onlineImageSelectionGrid"
+        app:layout_constraintEnd_toStartOf="@+id/onlineImageSelectionGrid"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/imageSelectionGrid"
-        app:layout_constraintTop_toBottomOf="@+id/imageSelectionGrid">
+        app:layout_constraintStart_toEndOf="@+id/onlineImageSelectionGrid"
+        app:layout_constraintTop_toBottomOf="@+id/onlineImageSelectionGrid">
 
         <TextView
             android:id="@+id/textView4"

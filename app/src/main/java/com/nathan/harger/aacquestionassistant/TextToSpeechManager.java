@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
@@ -18,10 +18,14 @@ class TextToSpeechManager {
                 tts.speak(temp, TextToSpeech.QUEUE_FLUSH, null, "");
             }
         }
+
         @Override
-        public void onStart(String utteranceId) { }
+        public void onStart(String utteranceId) {
+        }
+
         @Override
-        public void onError(String utteranceId) {}
+        public void onError(String utteranceId) {
+        }
     };
 
     static void initTextToSpeech(Context context) {

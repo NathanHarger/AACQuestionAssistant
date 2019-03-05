@@ -1,13 +1,10 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -39,6 +36,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
     private List<Fragment> fragments;
     private ImageDatabaseHelper idh;
     private boolean locked = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -75,7 +73,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
                 bottomAppBar.setNavigationIcon(locked ? R.drawable.locked : R.drawable.unlocked);
                 Objects.requireNonNull(bottomAppBar.getNavigationIcon()).setAlpha(locked ? 158 : 255);
 
-                if(newItemCreate != null)
+                if (newItemCreate != null)
                     newItemCreate.setAlpha(locked ? .5f : 1f);
                 itemEdit.setAlpha(locked ? .5f : 1f);
                 itemDelete.setAlpha(locked ? .5f : 1f);
@@ -121,10 +119,10 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         CardView other;
         int otherColor;
 
-        if(v.getId() == R.id.cv){
+        if (v.getId() == R.id.cv) {
             other = cv.findViewById(R.id.cv1);
             otherColor = R.color.red;
-        } else{
+        } else {
             other = cv.findViewById(R.id.cv);
             otherColor = R.color.green;
 
@@ -143,7 +141,6 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         String s = tv.getText().toString();
         TextToSpeechManager.speak(s);
     }
-
 
 
     private void setupDB() {

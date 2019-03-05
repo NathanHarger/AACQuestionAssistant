@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,6 +41,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     private boolean locked = false;
     private View emptyView;
     private SimpleItemTouchHelperCallback simpleItemTouchHelperCallback;
+    private ArrayList<Card> deletedVocab = new ArrayList<>();
 
     CardRecyclerViewAdapter(List<Card> cards, CustomItemClickListener listener, RecyclerView rv, Context context) {
         this.cards = cards;
@@ -114,10 +115,10 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         }
 
         // items clicked when no card selected
-        if(id == R.id.item_delete){
-            Toast.makeText(context,"Select Card to Delete",Toast.LENGTH_LONG).show();
-        } else if(id == R.id.item_edit){
-            Toast.makeText(context,"Select Card to Edit",Toast.LENGTH_LONG).show();
+        if (id == R.id.item_delete) {
+            Toast.makeText(context, "Select Card to Delete", Toast.LENGTH_LONG).show();
+        } else if (id == R.id.item_edit) {
+            Toast.makeText(context, "Select Card to Edit", Toast.LENGTH_LONG).show();
 
         }
     }
@@ -209,8 +210,6 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
             stopDrag(key);
         }
     }
-
-    private ArrayList<Card> deletedVocab = new ArrayList<>();
 
     private void deleteSelected() {
 
@@ -345,7 +344,6 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         FileOperations.setImageSource(c, card, cardViewHolder.image, cardViewHolder.noImageLabel);
 
 
-
         if (card.isSelected) {
             cardViewHolder.cv.setSelected(true);
             Resources.Theme theme = context.getTheme();
@@ -377,11 +375,11 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
                 }
             }
         }
-            for (Card i : cardsToDelete) {
-                deleteCard(i);
+        for (Card i : cardsToDelete) {
+            deleteCard(i);
 
-            }
         }
+    }
 
 
     @Override

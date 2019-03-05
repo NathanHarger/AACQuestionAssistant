@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -19,6 +19,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
     private final CustomItemClickListener listener;
     private final RecyclerView rv;
     private final List<Card> cards;
+
     ImageSelectionRecyclerViewAdapter(List<Card> images, CustomItemClickListener listener, RecyclerView rv) {
         this.listener = listener;
         this.rv = rv;
@@ -35,7 +36,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
     }
 
     public int getItemCount() {
-       return cards.size();
+        return cards.size();
     }
 
     public void submitList(List<Card> list) {
@@ -60,14 +61,14 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
         return cvh;
     }
 
-     void remove(Card c) {
+    void remove(Card c) {
         List<Card> result = new LinkedList<>();
-        for(Card curr: cards){
+        for (Card curr : cards) {
             if (curr.key != c.key) {
                 result.add(curr);
             }
         }
-         submitList(result);
+        submitList(result);
 
     }
 
@@ -95,6 +96,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
         final TextView text;
         final ImageButton deleteCard;
         final TextView noImageLabel;
+
         CardViewHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cv);

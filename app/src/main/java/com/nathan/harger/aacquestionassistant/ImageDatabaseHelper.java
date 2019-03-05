@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -74,18 +74,18 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
         String query;
         if (searchQuery.length() == 0) {
             query = "SELECT * FROM images";
-       } else if ( searchQuery.matches("[^A-Za-z0-9]+")) {
+        } else if (searchQuery.matches("[^A-Za-z0-9]+")) {
 
             query = "SELECT * FROM images WHERE symbol " + "LIKE '%" + searchQuery + "%'";
-          //          " OR symbol = " + "'" + (searchQuery + "_lower_case") + "'";
+            //          " OR symbol = " + "'" + (searchQuery + "_lower_case") + "'";
         } else {
             query =
                     String.format("SELECT * FROM %s WHERE %s LIKE '%%%s%%'" +
-                            "order by " +
-                                    "case when "  +"symbol"  + " like " + "'"+searchQuery.charAt(0)+"%%' "
-                            + "then 1 else 2 end ",
+                                    "order by " +
+                                    "case when " + "symbol" + " like " + "'" + searchQuery.charAt(0) + "%%' "
+                                    + "then 1 else 2 end ",
                             TABLE_IMAGES, KEY_IMAGE_SYMBOL, searchQuery);
-       }
+        }
 
 
         try (Cursor c = db.rawQuery(query, null)) {
@@ -96,13 +96,13 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
                     String filename = c.getString(2);
                     int imageLoc = c.getInt(3);
                     String pronunciation = c.getString(4);
-                   if(imageLoc == 1) {
-                       result.add(new Card(id, filename, filename + "-" + pronunciation,
-                               imageLoc, pronunciation));
-                   } else {
-                       result.add(new Card(id, filename, filename ,
-                               imageLoc, pronunciation));
-                   }
+                    if (imageLoc == 1) {
+                        result.add(new Card(id, filename, filename + "-" + pronunciation,
+                                imageLoc, pronunciation));
+                    } else {
+                        result.add(new Card(id, filename, filename,
+                                imageLoc, pronunciation));
+                    }
                 } while (c.moveToNext());
             }
         } catch (Exception e) {

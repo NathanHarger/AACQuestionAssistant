@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.natha.aacquestionassistant">
+    package="com.nathan.harger.aacquestionassistant">
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         tools:ignore="GoogleAppIndexingWarning"
@@ -14,6 +16,7 @@
         android:installLocation="preferExternal"
         android:fullBackupContent="@xml/backup_rules"
         >
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -28,7 +31,8 @@
         </provider>
 
 
-        <activity android:name=".CardFragmentActivity"
+        <activity
+            android:name="com.nathan.harger.aacquestionassistant.CardFragmentActivity"
             android:configChanges="keyboardHidden|screenSize"
             >
 
@@ -38,12 +42,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ImageSelectionActivity">
+        <activity android:name="com.nathan.harger.aacquestionassistant.ImageSelectionActivity">
         </activity>
 
-        <activity android:name=".NewVocabActivity">
+        <activity android:name="com.nathan.harger.aacquestionassistant.NewVocabActivity">
         </activity>
-
+        <activity android:name=".OnlineImageSelectionActivity" />
 
 
     </application>

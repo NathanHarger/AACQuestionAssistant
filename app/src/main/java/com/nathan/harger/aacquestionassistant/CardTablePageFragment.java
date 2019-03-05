@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -22,12 +22,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.example.natha.aacquestionassistant.TextToSpeechManager.tts;
+import static com.nathan.harger.aacquestionassistant.TextToSpeechManager.tts;
 
 public class CardTablePageFragment extends Fragment {
     private static final int SELECT_IMAGE_REQUEST = 1;
     private static final int NEW_VOCAB_REQUEST = 1;
+    public static Bundle mBundleRecyclerViewState;
     private final List<Card> cards = new LinkedList<>();
+    private final String KEY_RECYCLER_STATE = "recycler_state";
     private CardRecyclerViewAdapter adapter;
     private int clickedCardIndex;
     private boolean locked = false;
@@ -173,9 +175,8 @@ public class CardTablePageFragment extends Fragment {
             }
         }
     }
-    public static Bundle mBundleRecyclerViewState;
-    private final String KEY_RECYCLER_STATE = "recycler_state";
-    public void onPause(){
+
+    public void onPause() {
         super.onPause();
         mBundleRecyclerViewState = new Bundle();
 
@@ -184,8 +185,7 @@ public class CardTablePageFragment extends Fragment {
     }
 
     @Override
-    public void onResume()
-    {
+    public void onResume() {
         super.onResume();
 
         // restore RecyclerView state
@@ -195,7 +195,6 @@ public class CardTablePageFragment extends Fragment {
         }
         adapter.deleteInvalidVocab();
     }
-
 
 
     @Override

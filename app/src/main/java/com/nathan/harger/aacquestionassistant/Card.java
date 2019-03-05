@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -44,13 +44,22 @@ public class Card implements Parcelable {
         this.key = this.hashCode();
         this.id = Integer.parseInt(values[0]);
         this.label = values[1];
-        this.photoId = values[1]+values[0];
+        this.photoId = values[1] + values[0];
         resourceLocation = Integer.parseInt(values[2]);
         if (values.length == 4) {
             pronunciation = values[3];
         } else {
             pronunciation = "";
         }
+    }
+
+    public Card(int resourceLocation) {
+        this.key = this.hashCode();
+        this.label = "";
+        this.photoId = "";
+        this.isSelected = false;
+        pronunciation = "";
+        this.resourceLocation = resourceLocation;
     }
 
     public Card(int id, String values[]) {

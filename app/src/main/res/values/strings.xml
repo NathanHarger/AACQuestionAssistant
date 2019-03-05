@@ -15,7 +15,9 @@
     <string name="yes_no">Yes No</string>
     <string name="preview_speech">Preview Speech</string>
     <string name="submit">Submit</string>
-    <string name="select_image">Select Image</string>
+    <string name="select_gallery_image">Gallery Image</string>
+    <string name="select_online_image">Online Image</string>
+
     <string name="pronunciation">Pronunciation</string>
     <string name="cancel">Cancel</string>
     <string name="enter_pronunciation">Enter Pronunciation</string>
@@ -24,5 +26,5 @@
     <string name="edit">Edit</string>
     <string name="image">image</string>
     <string name="new_vocab_pronunciation">Pronunciation</string>
-    <string name="name">name</string>
+    <string name="name">Vocab</string>
 </resources>

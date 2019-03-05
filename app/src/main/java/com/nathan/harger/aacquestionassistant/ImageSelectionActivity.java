@@ -1,4 +1,4 @@
-package com.example.natha.aacquestionassistant;
+package com.nathan.harger.aacquestionassistant;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -27,9 +27,9 @@ public class ImageSelectionActivity extends AppCompatActivity {
     private static final int CREATE_NEW_VOCAB = 3;
     private final List<Card> images = new LinkedList<>();
     private final ArrayList<Card> deletedVocab = new ArrayList<>();
+    protected ImageDatabaseHelper idh;
+    protected RecyclerView rv;
     private ImageSelectionRecyclerViewAdapter adapter;
-    private ImageDatabaseHelper idh;
-    private RecyclerView rv;
     private DeleteNewVocabDialogFragment deleteNewVocabDialogFragment;
     private Card deletedCard = null;
 
@@ -37,7 +37,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_selection_layout);
-        rv = findViewById(R.id.imageSelectionGrid);
+        rv = findViewById(R.id.onlineImageSelectionGrid);
         Parcelable p = null;
         ArrayList al = null;
         if (savedInstanceState != null) {
@@ -97,8 +97,6 @@ public class ImageSelectionActivity extends AppCompatActivity {
     }
 
 
-
-
     public void deleteCustomVocab(View v) {
         int id = v.getId();
         if (id == R.id.imageSelectionDelete) {
@@ -118,7 +116,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
         }
     }
 
-    private void submit_photo(int position) {
+    protected void submit_photo(int position) {
         Card curr = adapter.getItem(position);
         String i = curr.label;
         Intent output = new Intent();
