@@ -128,9 +128,7 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
 
 
             }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
+
         }
     }
 

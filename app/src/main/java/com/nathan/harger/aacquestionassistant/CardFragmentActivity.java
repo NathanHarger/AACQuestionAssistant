@@ -75,9 +75,15 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
                 if (newItemCreate != null)
                     newItemCreate.setAlpha(locked ? .5f : 1f);
-                itemEdit.setAlpha(locked ? .5f : 1f);
-                itemDelete.setAlpha(locked ? .5f : 1f);
-                newcard.setAlpha(locked ? .5f : 1f);
+                
+                if (itemEdit != null)
+                    itemEdit.setAlpha(locked ? .5f : 1f);
+
+                if (itemDelete != null)
+                    itemDelete.setAlpha(locked ? .5f : 1f);
+
+                if (newcard != null)
+                    newcard.setAlpha(locked ? .5f : 1f);
                 listener.toggleUiLockClick();
             }
         });
