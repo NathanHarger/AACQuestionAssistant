@@ -27,4 +27,6 @@
     <string name="image">image</string>
     <string name="new_vocab_pronunciation">Pronunciation</string>
     <string name="name">Vocab</string>
+    <string name="save_grid">Save Vocab Grid</string>
+    <string name="restore_grid">Restore Vocab Grid</string>
 </resources>

@@ -33,8 +33,8 @@ import static android.view.View.VISIBLE;
 
 
 public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CardRecyclerViewAdapter.CardViewHolder> implements ItemTouchHelperAdapter {
-    private final RecyclerView rv;
-    private final List<Card> cards;
+    protected final RecyclerView rv;
+    protected final List<Card> cards;
     private final CustomItemClickListener listener;
     private final Context context;
     private ItemTouchHelper ith;
@@ -112,6 +112,18 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         } else if (id == R.id.add_card) {
 
             this.addItem(new Card());
+        } else if (id == R.id.save_grid && cards.size() > 0) {
+
+            long groupkey = ImageDatabaseHelper.getInstance(this.context).addNewCardGroup(cards);
+            if (groupkey != -1) {
+                FileOperations.writeGroup(this.context, groupkey, cards);
+
+                Toast.makeText(context, "Card Board Saved", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Board Contains No Vocab", Toast.LENGTH_SHORT).show();
+
+            }
+
         }
 
         // items clicked when no card selected
@@ -260,7 +272,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     }
 
 
-    void updateItem(int position, String label, String file, int resourceLocation, String pronunciation, int id) {
+    void updateItem(int position, String label, String file, int resourceLocation, String pronunciation, long id) {
         Card item = cards.get(position);
         item.id = id;
         item.label = label;
@@ -273,8 +285,8 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     void setItemTag(int position) {
 
         CardRecyclerViewAdapter.CardViewHolder v = (CardRecyclerViewAdapter.CardViewHolder) rv.findViewHolderForAdapterPosition(position);
-        if (v == null) throw new AssertionError();
-        v.cv.setTag("cv");
+        if (v != null)
+            v.cv.setTag("cv");
     }
 
     public int getItemCount() {

@@ -31,6 +31,7 @@ public class CardTablePageFragment extends Fragment {
     private final List<Card> cards = new LinkedList<>();
     private final String KEY_RECYCLER_STATE = "recycler_state";
     private CardRecyclerViewAdapter adapter;
+    private List<Card> newList = new LinkedList<>();
     private int clickedCardIndex;
     private boolean locked = false;
 
@@ -136,7 +137,13 @@ public class CardTablePageFragment extends Fragment {
             public void menuClick(int id) {
                 if (!locked) {
                     adapter.menuClick(id);
+                    if (id == R.id.restore_grid) {
+                        Intent i = new Intent(getContext(), RestoreCardGridActivity.class);
+                        startActivityForResult(i, 10);
+
+                    }
                 } else {
+
                     Toast.makeText(getContext(), "Locked Out", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -157,9 +164,17 @@ public class CardTablePageFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra("new_list")) {
+                List<Card> newList = (List<Card>) data.getSerializableExtra("list");
+                this.newList = newList;
+                adapter.submitList(new ArrayList<Card>(newList));
+
+                return;
+            }
+
             adapter.setItemTag(clickedCardIndex);
             if (data.hasExtra("name")) {
-                int id = data.getIntExtra("id", -1);
+                long id = data.getLongExtra("id", -1);
                 String returnValue = data.getStringExtra("name");
                 String returnImage = data.getStringExtra("filename");
                 int resourceLocation = data.getIntExtra("resourceLocation", 0);
@@ -188,10 +203,16 @@ public class CardTablePageFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+
         // restore RecyclerView state
         if (mBundleRecyclerViewState != null) {
             ArrayList<Card> listState = mBundleRecyclerViewState.getParcelableArrayList(KEY_RECYCLER_STATE);
             adapter.submitList(listState);
+
+        }
+        if (newList.size() != 0) {
+            adapter.submitList(new ArrayList<Card>(newList));
+            newList.clear();
         }
         adapter.deleteInvalidVocab();
     }

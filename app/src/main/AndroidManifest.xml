@@ -48,6 +48,7 @@
         <activity android:name="com.nathan.harger.aacquestionassistant.NewVocabActivity">
         </activity>
         <activity android:name=".OnlineImageSelectionActivity" />
+        <activity android:name=".RestoreCardGridActivity" />
 
 
     </application>

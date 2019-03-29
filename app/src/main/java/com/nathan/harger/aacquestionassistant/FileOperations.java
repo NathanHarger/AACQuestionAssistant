@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 class FileOperations {
 
@@ -97,13 +98,14 @@ class FileOperations {
                 photoId = filename + "-" + fileInfo.pronunciation;
             }
             fileInfo.photoId = photoId;
+            long id = ImageDatabaseHelper.getInstance(context).addImage(fileInfo);
+            fileInfo.id = id;
             b = new BufferedWriter(new FileWriter(mypath, true));
             if (mypath.length() == 0) {
-                b.append(filename).append(",").append("1,").append(fileInfo.pronunciation);
+                b.append(filename).append(",").append("1,").append(fileInfo.pronunciation).append(",").append("" + id);
             } else {
-                b.append("\n").append(filename).append(",").append("1,").append(fileInfo.pronunciation);
+                b.append("\n").append(filename).append(",").append("1,").append(fileInfo.pronunciation).append(",").append("" + id);
             }
-            ImageDatabaseHelper.getInstance(context).addImage(fileInfo);
 
             if (image != null)
                 saveToInternalStorage(image, photoId, context);
@@ -181,10 +183,10 @@ class FileOperations {
         File mypath = new File(directory, "fringeVocab.csv");
         try {
             b = new BufferedReader(new FileReader(mypath));
-            while ((line = b.readLine()) != null) {
+            while ((line = b.readLine()) != null && !line.equals("")) {
                 String[] tokens = line.split(",");
-                int id = -1;
-                idh.addImage(new Card(id, tokens));
+
+                idh.addImage(new Card(-1, tokens));
             }
         } catch (FileNotFoundException e) {
             Log.e("CSV parsing: ", e.getMessage());
@@ -197,6 +199,80 @@ class FileOperations {
                     b.close();
                 } catch (IOException e) {
                     Log.e("CSV writing: ", (e.getMessage()));
+                }
+            }
+        }
+    }
+
+    public static void readVocabGroup(Context context, ImageDatabaseHelper idh) {
+        ContextWrapper cw = new ContextWrapper(context);
+        String vocabKeyLine;
+        BufferedReader b = null;
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File mypath = new File(directory, "vocabGroup.csv");
+        try {
+            b = new BufferedReader(new FileReader(mypath));
+            while ((vocabKeyLine = b.readLine()) != null && !vocabKeyLine.equals("")) {
+                long vocabKey = Long.parseLong(vocabKeyLine);
+                String line = b.readLine();
+                String[] tokens = line.split(",");
+
+                idh.addCardGroup(vocabKey, tokens);
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("CSV parsing: ", e.getMessage());
+        } catch (
+                IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (b != null) {
+                try {
+                    b.close();
+                } catch (IOException e) {
+                    Log.e("CSV writing: ", (e.getMessage()));
+                }
+            }
+        }
+    }
+
+    public static void writeGroup(Context context, long groupkey, List<Card> cards) {
+        {
+
+            ContextWrapper cw = new ContextWrapper(context);
+
+            BufferedWriter b = null;
+            File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+            File mypath = new File(directory, "vocabGroup.csv");
+            try {
+
+
+                b = new BufferedWriter(new FileWriter(mypath, true));
+                if (mypath.length() == 0) {
+                    b.append(String.valueOf(groupkey)).append("\n");
+
+                } else {
+                    b.append("\n").append(String.valueOf(groupkey)).append("\n");
+
+                }
+
+                b.append(String.valueOf(cards.get(0).id));
+                for (int i = 1; i < cards.size(); i++) {
+                    b.append(",").append(String.valueOf(cards.get(i).id));
+                }
+
+
+            } catch (FileNotFoundException e) {
+                Log.e("CSV parsing: ", e.getMessage());
+            } catch (
+                    IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (b != null) {
+                    try {
+                        b.close();
+                    } catch (IOException e) {
+                        Log.e("CSV writing: ", e.getMessage());
+                    }
                 }
             }
         }

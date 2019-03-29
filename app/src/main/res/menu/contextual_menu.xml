@@ -28,6 +28,19 @@
         android:titleCondensed="Create Word"
         app:showAsAction="ifRoom|withText">
 
+
     </item>
+    <item
+        android:id="@+id/save_grid"
+        android:title="@string/save_grid"
+        android:titleCondensed="Create Grid"
+        app:showAsAction="never|withText"></item>
+
+    <item
+        android:id="@+id/restore_grid"
+        android:title="@string/restore_grid"
+        android:titleCondensed="Restore Grid"
+        app:showAsAction="never|withText"></item>
+
 
 </menu>

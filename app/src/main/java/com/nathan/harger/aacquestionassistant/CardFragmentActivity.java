@@ -149,6 +149,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
     }
 
 
+
     private void setupDB() {
         String line;
         String split = ",";
@@ -166,6 +167,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
             // read in custom vocab
             FileOperations.readNewVocab(this.getApplicationContext(), idh);
+            FileOperations.readVocabGroup(this.getApplicationContext(), idh);
         } catch (FileNotFoundException e) {
             Log.e("CSV parsing: ", e.getMessage());
         } catch (IOException e) {

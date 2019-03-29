@@ -18,7 +18,7 @@ public class Card implements Parcelable {
     final long key;
     String label;
     String photoId;
-    int id;
+    long id;
     boolean isSelected;
     int resourceLocation;
     String pronunciation;
@@ -31,13 +31,20 @@ public class Card implements Parcelable {
         pronunciation = "";
     }
 
+    //out.writeLong(id);
+    //       out.writeLong(key);
+//        out.writeString(label);
+    //       out.writeString(photoId);
+    //       out.writeValue(isSelected);
+    //       out.writeString(pronunciation);
     private Card(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readLong();
         this.key = in.readLong();
         this.label = in.readString();
         this.photoId = in.readString();
         this.isSelected = (boolean) in.readValue(getClass().getClassLoader());
         pronunciation = in.readString();
+        this.resourceLocation = in.readInt();
     }
 
     Card(String values[]) {
@@ -64,14 +71,12 @@ public class Card implements Parcelable {
 
     public Card(int id, String values[]) {
         this.key = this.hashCode();
-        this.id = id;
+        this.id = Long.parseLong(values[3]);
         label = values[0];
         resourceLocation = Integer.parseInt(values[1]);
-        if (values.length == 3) {
             pronunciation = values[2];
-        } else {
-            pronunciation = "";
-        }
+
+
     }
 
 
@@ -90,12 +95,13 @@ public class Card implements Parcelable {
     }
 
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(id);
+        out.writeLong(id);
         out.writeLong(key);
         out.writeString(label);
         out.writeString(photoId);
         out.writeValue(isSelected);
         out.writeString(pronunciation);
+        out.writeInt(this.resourceLocation);
     }
 
     @Override
@@ -108,8 +114,8 @@ public class Card implements Parcelable {
         }
 
         Card c = (Card) o;
-
-        return this.label.equals(c.label) && this.pronunciation.equals(c.pronunciation);
+        return c.id == this.id;
+        //return this.label.equals(c.label) && this.pronunciation.equals(c.pronunciation);
     }
 
     @NonNull
@@ -121,6 +127,7 @@ public class Card implements Parcelable {
                 ", photoId='" + photoId + '\'' +
                 ", isSelected='" + isSelected + '\'' +
                 ", pronunciation='" + pronunciation + '\'' +
+                ", resourceLocation=' " + resourceLocation +
                 '}';
     }
 }

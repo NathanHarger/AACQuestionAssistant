@@ -29,7 +29,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
     private final ArrayList<Card> deletedVocab = new ArrayList<>();
     protected ImageDatabaseHelper idh;
     protected RecyclerView rv;
-    private ImageSelectionRecyclerViewAdapter adapter;
+    protected ImageSelectionRecyclerViewAdapter adapter;
     private DeleteNewVocabDialogFragment deleteNewVocabDialogFragment;
     private Card deletedCard = null;
 
@@ -54,7 +54,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
 
         idh = ImageDatabaseHelper.getInstance(ImageSelectionActivity.this);
 
-        adapter = new ImageSelectionRecyclerViewAdapter(null, new CustomItemClickListener() {
+        adapter = new ImageSelectionRecyclerViewAdapter(new CustomItemClickListener() {
 
             @Override
             public void onItemClick(View v, int position) {
@@ -62,7 +62,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
                 submit_photo(position);
 
             }
-        }, rv
+        }, rv, true
         );
 
         if (al != null && p != null) {
@@ -120,6 +120,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
         Card curr = adapter.getItem(position);
         String i = curr.label;
         Intent output = new Intent();
+        output.putExtra("id", curr.id);
         output.putExtra("name", i);
         output.putExtra("filename", curr.photoId);
         output.putExtra("resourceLocation", curr.resourceLocation);
@@ -164,8 +165,9 @@ public class ImageSelectionActivity extends AppCompatActivity {
 
         if (requestCode == CREATE_NEW_VOCAB) {
             if (resultCode == Activity.RESULT_OK) {
+
                 if (data.hasExtra("name")) {
-                    int id = data.getIntExtra("id", -1);
+                    long id = data.getLongExtra("id", -1);
                     String returnValue = data.getStringExtra("name");
                     String returnImage = data.getStringExtra("filename");
                     int resourceLocation = data.getIntExtra("resourceLocation", 0);

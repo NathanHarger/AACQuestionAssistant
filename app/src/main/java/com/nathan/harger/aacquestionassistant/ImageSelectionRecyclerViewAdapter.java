@@ -16,14 +16,17 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<ImageSelectionRecyclerViewAdapter.CardViewHolder> {
-    private final CustomItemClickListener listener;
+    protected final CustomItemClickListener listener;
     private final RecyclerView rv;
     private final List<Card> cards;
+    private final boolean removeEnabled;
 
-    ImageSelectionRecyclerViewAdapter(List<Card> images, CustomItemClickListener listener, RecyclerView rv) {
+    ImageSelectionRecyclerViewAdapter(CustomItemClickListener listener, RecyclerView rv, boolean removeEnabled) {
         this.listener = listener;
         this.rv = rv;
         cards = new LinkedList<>();
+        this.removeEnabled = removeEnabled;
+
     }
 
     public Card getCardFromCardView(View cv) {
@@ -87,7 +90,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
             curr.label += " (" + curr.pronunciation + ")";
         }
         cardViewHolder.text.setText(curr.label);
-        cardViewHolder.deleteCard.setVisibility(curr.resourceLocation == 1 ? View.VISIBLE : View.GONE);
+        cardViewHolder.deleteCard.setVisibility(curr.resourceLocation == 1 && removeEnabled ? View.VISIBLE : View.GONE);
     }
 
     public static class CardViewHolder extends RecyclerView.ViewHolder {

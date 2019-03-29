@@ -38,7 +38,7 @@ public class OnlineImageSelectionActivity extends ImageSelectionActivity {
 
         idh = ImageDatabaseHelper.getInstance(OnlineImageSelectionActivity.this);
 
-        adapter = new ImageSelectionRecyclerViewAdapter(null, new CustomItemClickListener() {
+        adapter = new ImageSelectionRecyclerViewAdapter(new CustomItemClickListener() {
 
             @Override
             public void onItemClick(View v, int position) {
@@ -46,7 +46,7 @@ public class OnlineImageSelectionActivity extends ImageSelectionActivity {
                 submit_photo(position);
 
             }
-        }, rv
+        }, rv, false
         );
 
         if (al != null && p != null) {
