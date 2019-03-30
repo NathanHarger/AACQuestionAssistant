@@ -78,7 +78,9 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
     public void onBindViewHolder(@NonNull final CardViewHolder cardViewHolder, int i) {
         Card curr = cards.get(i);
         Context c = cardViewHolder.cv.getContext();
-        curr.label = curr.label.replace("_", " ").replaceAll("[0-9]", "");
+        curr.label = curr.label.replace("_", " ");
+        if (curr.resourceLocation == 0)
+            curr.label = curr.label.replaceAll("[0-9]", "");
 
         cardViewHolder.noImageLabel.setText(curr.label);
 

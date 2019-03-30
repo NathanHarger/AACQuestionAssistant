@@ -347,6 +347,10 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         //  cards.set(i,card);
 //
         //    }
+        card.label = card.label.replaceAll("_", " ");
+        if (card.resourceLocation == 0) {
+            card.label = card.label.replaceAll("[0-9]", "");
+        }
         cardViewHolder.label.setText(card.label);
 
         Context c = cardViewHolder.cv.getContext();

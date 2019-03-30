@@ -108,6 +108,8 @@ public class ImageSelectionActivity extends AppCompatActivity {
             deleteNewVocabDialogFragment.dismiss();
         } else {
             Log.d("Delete: ", "" + deletedCard.id);
+            idh.removeCardFromCardGroup(deletedCard.id);
+
             idh.deleteCustomVocab(deletedCard.id);
             FileOperations.deleteCustomVocab(deletedCard.photoId, v.getContext());
             deleteNewVocabDialogFragment.dismiss();
@@ -174,7 +176,7 @@ public class ImageSelectionActivity extends AppCompatActivity {
                     String pronunciation = data.getStringExtra("pronunciation");
 
                     String label = returnValue.replace("_", " ");
-                    label = label.replaceAll("[0-9]", "");
+                    //label = label.replaceAll("[0-9]", "");
 
                     Intent output = new Intent();
                     output.putExtra("id", id);

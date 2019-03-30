@@ -87,6 +87,7 @@ public class Card implements Parcelable {
         this.label = filename;
         this.resourceLocation = imageLocation;
         this.pronunciation = pronunciation;
+
     }
 
     @Override

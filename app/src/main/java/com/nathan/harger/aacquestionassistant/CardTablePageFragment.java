@@ -180,7 +180,8 @@ public class CardTablePageFragment extends Fragment {
                 int resourceLocation = data.getIntExtra("resourceLocation", 0);
                 String pronunciation = data.getStringExtra("pronunciation");
                 String label = returnValue.replace("_", " ");
-                label = label.replaceAll("[0-9]", "");
+                if (resourceLocation == 0)
+                    label = label.replaceAll("[0-9]", "");
                 adapter.updateItem(clickedCardIndex, label, returnImage, resourceLocation, pronunciation, id);
             }
 

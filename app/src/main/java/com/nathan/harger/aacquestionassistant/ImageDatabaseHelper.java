@@ -212,6 +212,7 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
 
 
     public void deleteCustomVocab(long id) {
+        //db.delete(TABLE_IMAGES, "? = ?", new String[]{KEY_IMAGE_ID,(id)});
         String q = "DELETE FROM images WHERE " + KEY_IMAGE_ID + " = " + id;
         db.execSQL(q);
 
@@ -268,6 +269,46 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
 
         return result;
     }
+
+    public void removeCardFromCardGroup(long cardKey) {
+
+        String q = "DELETE FROM " + TABLE_VOCAB_GROUP + " WHERE " + IMAGE_FOREIGN_KEY + " = " + cardKey;
+        db.execSQL(q);
+
+        removeEmptyCardSets();
+    }
+
+    private void removeEmptyCardSets() {
+        List<Long> ids = new LinkedList<>();
+        String query = "SELECT * FROM " + TABLE_VOCAB_SETS + " a WHERE NOT EXISTS ( SELECT * FROM " + TABLE_VOCAB_GROUP + " b WHERE a.vocab_set_id = b.foreign_key);";
+        try (Cursor c = db.rawQuery(query, null)) {
+            db.beginTransaction();
+            if (c.moveToFirst()) {
+                do {
+                    long id = c.getLong(0);
+                    ids.add(id);
+
+                } while (c.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error while trying to get images from database");
+
+        } finally {
+            db.endTransaction();
+        }
+
+
+        for (long i :
+                ids) {
+
+            String q = "DELETE FROM " + TABLE_VOCAB_SETS + " WHERE " + KEY_VOCAB_SET_ID + " = " + i;
+            db.execSQL(q);
+
+        }
+
+    }
+
+
 
 
     /*
