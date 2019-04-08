@@ -2,6 +2,7 @@ package com.nathan.harger.aacquestionassistant;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -24,6 +25,7 @@ import java.util.ListIterator;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
@@ -33,8 +35,8 @@ import static android.view.View.VISIBLE;
 
 
 public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.RecyclerView.Adapter<CardRecyclerViewAdapter.CardViewHolder> implements ItemTouchHelperAdapter {
-    protected final RecyclerView rv;
-    protected final List<Card> cards;
+    private final RecyclerView rv;
+    private final List<Card> cards;
     private final CustomItemClickListener listener;
     private final Context context;
     private ItemTouchHelper ith;
@@ -118,7 +120,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
             if (groupkey != -1) {
                 FileOperations.writeGroup(this.context, groupkey, cards);
 
-                Toast.makeText(context, "Card Board Saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Vocab Board Saved", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(context, "Board Contains No Vocab", Toast.LENGTH_SHORT).show();
 
@@ -308,6 +310,11 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
     @Override
     public CardViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, final int i) {
         final View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_layout, viewGroup, false);
+        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
+        int orientation = v.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 3 : 2;
+
+        lp.height = viewGroup.getMeasuredHeight() / orientation - orientation * (viewGroup.getPaddingBottom() + viewGroup.getPaddingTop());
+        v.setLayoutParams(lp);
         final CardViewHolder cvh = new CardViewHolder(v);
         final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
 
@@ -329,6 +336,8 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
                 return gestureDetector.onTouchEvent(event);
             }
         });
+
+
         return cvh;
     }
 

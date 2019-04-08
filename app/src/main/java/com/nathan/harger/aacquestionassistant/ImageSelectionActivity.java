@@ -27,9 +27,9 @@ public class ImageSelectionActivity extends AppCompatActivity {
     private static final int CREATE_NEW_VOCAB = 3;
     private final List<Card> images = new LinkedList<>();
     private final ArrayList<Card> deletedVocab = new ArrayList<>();
-    protected ImageDatabaseHelper idh;
-    protected RecyclerView rv;
-    protected ImageSelectionRecyclerViewAdapter adapter;
+    ImageDatabaseHelper idh;
+    RecyclerView rv;
+    private ImageSelectionRecyclerViewAdapter adapter;
     private DeleteNewVocabDialogFragment deleteNewVocabDialogFragment;
     private Card deletedCard = null;
 
@@ -108,17 +108,25 @@ public class ImageSelectionActivity extends AppCompatActivity {
             deleteNewVocabDialogFragment.dismiss();
         } else {
             Log.d("Delete: ", "" + deletedCard.id);
-            idh.removeCardFromCardGroup(deletedCard.id);
 
+            // remove the vocab from the vocabSets, database and files
+            List<Long> emptyVocabSets = idh.removeCardFromCardGroup(deletedCard.id);
+            FileOperations.deleteVocabFromGroup(deletedCard.id, emptyVocabSets, v.getContext());
+
+
+            // remove the custom vocab from database and file
             idh.deleteCustomVocab(deletedCard.id);
             FileOperations.deleteCustomVocab(deletedCard.photoId, v.getContext());
             deleteNewVocabDialogFragment.dismiss();
+
             adapter.remove(deletedCard);
+
+            // add to list to cards to delete on CardRecyclerViewAdapter onresume method
             deletedVocab.add(deletedCard);
         }
     }
 
-    protected void submit_photo(int position) {
+    void submit_photo(int position) {
         Card curr = adapter.getItem(position);
         String i = curr.label;
         Intent output = new Intent();

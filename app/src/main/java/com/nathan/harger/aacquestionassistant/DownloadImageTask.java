@@ -8,10 +8,10 @@ import android.widget.ImageView;
 
 import java.net.URL;
 
-public class DownloadImageTask extends AsyncTask<String, Integer, Bitmap> {
+class DownloadImageTask extends AsyncTask<String, Integer, Bitmap> {
 
 
-    private final ThreadLocal<ImageView> imageView = new ThreadLocal<ImageView>();
+    private final ThreadLocal<ImageView> imageView = new ThreadLocal<>();
 
 
     DownloadImageTask(ImageView imageView) {
@@ -39,7 +39,8 @@ public class DownloadImageTask extends AsyncTask<String, Integer, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap image) {
         super.onPostExecute(image);
-        imageView.get().setImageBitmap(image);
+        if (image != null)
+            imageView.get().setImageBitmap(image);
 
     }
 

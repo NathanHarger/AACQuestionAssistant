@@ -23,10 +23,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class NewVocabActivity extends AppCompatActivity implements IPickResult {
     private final int ONLINE_IMAGE = 3;
-    protected Bitmap selectedImage;
+    private Bitmap selectedImage;
     private PickImageDialog pickImageDialog;
-    private ImageDatabaseHelper idh;
-    private String pronunciation = "";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +41,6 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
             String word = b.getString("word");
             ((EditText) findViewById(R.id.editText2)).setText(word);
         }
-        idh = ImageDatabaseHelper.getInstance(NewVocabActivity.this);
 
     }
 
@@ -112,8 +109,6 @@ public class NewVocabActivity extends AppCompatActivity implements IPickResult {
             selectedImage = r.getBitmap();
             ((ImageView) findViewById(R.id.imageView2)).setImageBitmap(selectedImage);
 
-        } else {
-            Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
         }
         pickImageDialog.dismiss();
     }

@@ -2,9 +2,10 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cv"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:layout_marginBottom="8dp"
     android:bottomLeftRadius="6dp"
     android:bottomRightRadius="6dp"
@@ -17,9 +18,9 @@
     app:cardCornerRadius="15dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contraintLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
         <TextView
@@ -42,36 +43,37 @@
         <ImageView
             android:id="@+id/imageView"
 
-            android:layout_width="157dp"
-            android:layout_height="170dp"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:layout_margin="4dp"
 
+            android:layout_marginTop="8dp"
             android:clickable="false"
             android:cropToPadding="false"
             android:padding="4dp"
             android:scaleType="fitXY"
             android:tag="image"
+            app:layout_constraintBottom_toTopOf="@+id/textView"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.302"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="158dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
 
             android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="4dp"
             android:tag="name"
             android:text="@string/card"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
+            android:textAppearance="@android:style/TextAppearance.Material.Display1"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.052"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
 

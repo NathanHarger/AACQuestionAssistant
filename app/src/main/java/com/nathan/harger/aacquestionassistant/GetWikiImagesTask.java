@@ -15,10 +15,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GetWikiImagesTask extends AsyncTask<Object, Integer, List<String>> {
+class GetWikiImagesTask extends AsyncTask<Object, Integer, List<String>> {
 
-    private ImageSelectionRecyclerViewAdapter adapter;
-    private String search;
+    private final ImageSelectionRecyclerViewAdapter adapter;
+    private final String search;
 
     GetWikiImagesTask(ImageSelectionRecyclerViewAdapter adapter, String search) {
         this.adapter = adapter;
@@ -40,13 +40,13 @@ public class GetWikiImagesTask extends AsyncTask<Object, Integer, List<String>> 
             connection.connect();
             if (connection.getResponseCode() == 200) {
                 InputStream responseBody = connection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
 
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(responseBody));
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 responseBody.close();

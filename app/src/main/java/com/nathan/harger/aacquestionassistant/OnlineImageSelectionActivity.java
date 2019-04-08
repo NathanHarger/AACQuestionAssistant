@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 public class OnlineImageSelectionActivity extends ImageSelectionActivity {
-    protected ImageSelectionRecyclerViewAdapter adapter;
+    private ImageSelectionRecyclerViewAdapter adapter;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -55,13 +55,11 @@ public class OnlineImageSelectionActivity extends ImageSelectionActivity {
         }
         rv.setAdapter(adapter);
 
-
         getImages(search);
     }
 
     protected void submit_photo(int position) {
         Card curr = adapter.getItem(position);
-        String i = curr.label;
         Intent output = new Intent();
         output.putExtra("url", ((OnlineImageCard) curr).url);
         setResult(Activity.RESULT_OK, output);

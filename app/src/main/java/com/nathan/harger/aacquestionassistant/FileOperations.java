@@ -23,8 +23,6 @@ import java.util.List;
 
 class FileOperations {
 
-    private static Bitmap webImage = null;
-
     private static void saveToInternalStorage(Bitmap bitmapImage, String filename, Context context) {
         ContextWrapper cw = new ContextWrapper(context);
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -73,7 +71,7 @@ class FileOperations {
         }
     }
 
-    static void getPhotoFromWeb(final String url, final ImageView image) {
+    private static void getPhotoFromWeb(final String url, final ImageView image) {
 
         DownloadImageTask downloadImageTask = new DownloadImageTask(image);
         downloadImageTask.execute(url);
@@ -102,9 +100,9 @@ class FileOperations {
             fileInfo.id = id;
             b = new BufferedWriter(new FileWriter(mypath, true));
             if (mypath.length() == 0) {
-                b.append(filename).append(",").append("1,").append(fileInfo.pronunciation).append(",").append("" + id);
+                b.append(filename).append(",").append("1,").append(fileInfo.pronunciation).append(",").append(String.valueOf(id));
             } else {
-                b.append("\n").append(filename).append(",").append("1,").append(fileInfo.pronunciation).append(",").append("" + id);
+                b.append("\n").append(filename).append(",").append("1,").append(fileInfo.pronunciation).append(",").append(String.valueOf(id));
             }
 
             if (image != null)
@@ -127,14 +125,10 @@ class FileOperations {
     }
 
     static void deleteCustomVocab(String filename, Context context) {
-        int targetId;
         String[] filenameTokens = filename.split("-");
         String filenameArray = filenameTokens[0];
 
         String pronunciationArray = filenameTokens.length == 2 ? filenameTokens[1] : "";
-
-        String targetFilename = filenameArray;
-        String targetPronunciation = pronunciationArray;
 
         ContextWrapper cw = new ContextWrapper(context);
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -148,15 +142,18 @@ class FileOperations {
                 String pronunciation = tokens.length == 3 ? tokens[2] : "";
 
                 //if the filename don't match write  to file
-                if (!currFilename.equals(targetFilename)) {
+                if (!currFilename.equals(filenameArray)) {
                     fw.append(line);
                     fw.append("\n");
 
                 } else {
                     // if name and
-                    if (targetPronunciation.equals(pronunciation)) {
+                    if (pronunciationArray.equals(pronunciation)) {
                         File image = new File(directory, filename + ".png");
-                        image.delete();
+
+                        if (!image.delete()) {
+                            throw new FileNotFoundException();
+                        }
                     } else {
 
                         //write
@@ -166,12 +163,15 @@ class FileOperations {
                 }
             }
 
-            f.delete();
+            if (!f.delete()) {
+                throw new FileNotFoundException();
+            }
+
             File newfile = new File(directory, "fringeVocab.csv");
             boolean renamed = temp.renameTo(newfile);
             Log.d("delete ", "" + renamed);
         } catch (Exception e) {
-            Log.e("Delete New Vocab: ", e.getMessage());
+            Log.e("Delete New Vocab: ", e.getLocalizedMessage());
         }
     }
 
@@ -232,6 +232,58 @@ class FileOperations {
                     Log.e("CSV writing: ", (e.getMessage()));
                 }
             }
+        }
+    }
+
+
+    // deletedId is the id for the deleted card
+    // deletedSets are the ids of sets with 0 card group members
+    static void deleteVocabFromGroup(Long deletedId, List<Long> deletedSets, Context context) {
+
+
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File f = new File(directory, "vocabGroup.csv");
+        File temp = new File(directory, "tempVocabGroup.csv");
+
+        try (BufferedReader fr = new BufferedReader(new FileReader(f)); BufferedWriter fw = new BufferedWriter(new FileWriter(temp))) {
+            String vocabKeyLine;
+            while ((vocabKeyLine = fr.readLine()) != null && !vocabKeyLine.equals("")) {
+
+                long setKey = Long.parseLong(vocabKeyLine);
+
+                String line = fr.readLine();
+                String[] tokens = line.split(",");
+
+
+                //if the set id is not deletedId
+                if (deletedSets == null || !deletedSets.contains(setKey)) {
+                    fw.append(String.valueOf(setKey)).append("\n");
+                    if (deletedId == -1L) {
+                        fw.append(line);
+                    } else {
+                        fw.append(tokens[0]);
+
+                        for (int i = 1; i < tokens.length; i++) {
+                            if (Long.parseLong(tokens[i]) != deletedId) {
+                                fw.append(',').append(tokens[i]);
+                            }
+                        }
+                    }
+
+                    fw.append("\n");
+                }
+            }
+
+            if (!f.delete()) {
+                throw new FileNotFoundException();
+            }
+
+            File newfile = new File(directory, "vocabGroup.csv");
+            boolean renamed = temp.renameTo(newfile);
+            Log.d("delete ", "" + renamed);
+        } catch (Exception e) {
+            Log.e("Delete New Vocab: ", e.getMessage());
         }
     }
 

@@ -7,20 +7,20 @@
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/add_card"
         android:titleCondensed="Add Card"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="always|withText" />
     <item
         android:id="@+id/item_edit"
         android:icon="@android:drawable/ic_menu_edit"
         android:title="@string/edit"
         android:titleCondensed="Edit"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="always|withText" />
     <item
         android:id="@+id/item_delete"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/delete"
         android:titleCondensed="Delete"
 
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="always|withText" />
     <item
         android:id="@+id/new_item_create"
         android:icon="@drawable/book_plus"
@@ -34,13 +34,13 @@
         android:id="@+id/save_grid"
         android:title="@string/save_grid"
         android:titleCondensed="Create Grid"
-        app:showAsAction="never|withText"></item>
+        app:showAsAction="never|withText" />
 
     <item
         android:id="@+id/restore_grid"
         android:title="@string/restore_grid"
         android:titleCondensed="Restore Grid"
-        app:showAsAction="never|withText"></item>
+        app:showAsAction="never|withText" />
 
 
 </menu>

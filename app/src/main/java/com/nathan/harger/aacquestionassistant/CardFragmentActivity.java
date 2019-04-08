@@ -75,7 +75,7 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
                 if (newItemCreate != null)
                     newItemCreate.setAlpha(locked ? .5f : 1f);
-                
+
                 if (itemEdit != null)
                     itemEdit.setAlpha(locked ? .5f : 1f);
 
@@ -147,7 +147,6 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
         String s = tv.getText().toString();
         TextToSpeechManager.speak(s);
     }
-
 
 
     private void setupDB() {

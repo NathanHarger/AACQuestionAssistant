@@ -27,12 +27,12 @@ import static com.nathan.harger.aacquestionassistant.TextToSpeechManager.tts;
 public class CardTablePageFragment extends Fragment {
     private static final int SELECT_IMAGE_REQUEST = 1;
     private static final int NEW_VOCAB_REQUEST = 1;
-    public static Bundle mBundleRecyclerViewState;
+    private static Bundle mBundleRecyclerViewState;
     private final List<Card> cards = new LinkedList<>();
     private final String KEY_RECYCLER_STATE = "recycler_state";
     private CardRecyclerViewAdapter adapter;
     private List<Card> newList = new LinkedList<>();
-    private int clickedCardIndex;
+    private int clickedCardIndex = -1;
     private boolean locked = false;
 
     @Override
@@ -69,10 +69,11 @@ public class CardTablePageFragment extends Fragment {
                     ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, 0, 0);
                     startActivityForResult(i, NEW_VOCAB_REQUEST, options.toBundle());
                 } else {
+                    clickedCardIndex = -1;
                     Card c = cards.get(position);
                     long keyLastClick = adapter.getSelection();
 
-                    // deselet and stop drag of prev
+                    // deselect and stop drag of prev
                     if (keyLastClick != 0L) {
                         adapter.setSelected(keyLastClick, false);
                         adapter.stopDrag(keyLastClick);
@@ -110,8 +111,12 @@ public class CardTablePageFragment extends Fragment {
         }
 
         int orientation = getActivity().getResources().getConfiguration().orientation;
+
+
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            rv.setLayoutManager(new GridLayoutManager(this.getContext(), 2));
+            GridLayoutManager glm = new GridLayoutManager(this.getContext(), 2);
+            rv.setLayoutManager(glm);
+
 
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             rv.setLayoutManager(new GridLayoutManager(this.getContext(), 3));
@@ -167,7 +172,7 @@ public class CardTablePageFragment extends Fragment {
             if (data.hasExtra("new_list")) {
                 List<Card> newList = (List<Card>) data.getSerializableExtra("list");
                 this.newList = newList;
-                adapter.submitList(new ArrayList<Card>(newList));
+                adapter.submitList(new ArrayList<>(newList));
 
                 return;
             }
@@ -212,7 +217,7 @@ public class CardTablePageFragment extends Fragment {
 
         }
         if (newList.size() != 0) {
-            adapter.submitList(new ArrayList<Card>(newList));
+            adapter.submitList(new ArrayList<>(newList));
             newList.clear();
         }
         adapter.deleteInvalidVocab();

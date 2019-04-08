@@ -60,7 +60,7 @@ public class Card implements Parcelable {
         }
     }
 
-    public Card(int resourceLocation) {
+    Card(int resourceLocation) {
         this.key = this.hashCode();
         this.label = "";
         this.photoId = "";
@@ -74,7 +74,7 @@ public class Card implements Parcelable {
         this.id = Long.parseLong(values[3]);
         label = values[0];
         resourceLocation = Integer.parseInt(values[1]);
-            pronunciation = values[2];
+        pronunciation = values[2];
 
 
     }
@@ -115,7 +115,7 @@ public class Card implements Parcelable {
         }
 
         Card c = (Card) o;
-        return c.id == this.id;
+        return c.key == this.key;
         //return this.label.equals(c.label) && this.pronunciation.equals(c.pronunciation);
     }
 

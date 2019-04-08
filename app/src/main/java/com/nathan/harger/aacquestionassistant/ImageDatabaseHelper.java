@@ -34,10 +34,6 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
     private static final String IMAGE_FOREIGN_KEY = "image_foreign_key";
 
 
-
-
-
-
     @SuppressLint("SdCardPath")
     private static ImageDatabaseHelper sInstance;
     private final SQLiteDatabase db;
@@ -194,7 +190,6 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
     // Called when the database needs to be upgraded.
     // This method will only be called if a database already exists on disk with the same DATABASE_NAME,
     // but the DATABASE_VERSION is different than the version of the database that exists on disk.
@@ -270,15 +265,28 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public void removeCardFromCardGroup(long cardKey) {
+    public void deleteCardSet(long cardSetId) {
+        //db.delete(TABLE_IMAGES, "? = ?", new String[]{KEY_IMAGE_ID,(id)});
+        String deleteCardGroup = "DELETE FROM vocab_group WHERE " + KEY_VOCAB_FOREIGN_KEY + " = " + cardSetId;
+        db.execSQL(deleteCardGroup);
+
+
+        String deleteCardSet = "DELETE FROM sets WHERE " + KEY_VOCAB_SET_ID + " = " + cardSetId;
+        db.execSQL(deleteCardSet);
+
+
+    }
+
+    public List<Long> removeCardFromCardGroup(long cardKey) {
 
         String q = "DELETE FROM " + TABLE_VOCAB_GROUP + " WHERE " + IMAGE_FOREIGN_KEY + " = " + cardKey;
         db.execSQL(q);
 
-        removeEmptyCardSets();
+        return removeEmptyCardSets();
+
     }
 
-    private void removeEmptyCardSets() {
+    private List<Long> removeEmptyCardSets() {
         List<Long> ids = new LinkedList<>();
         String query = "SELECT * FROM " + TABLE_VOCAB_SETS + " a WHERE NOT EXISTS ( SELECT * FROM " + TABLE_VOCAB_GROUP + " b WHERE a.vocab_set_id = b.foreign_key);";
         try (Cursor c = db.rawQuery(query, null)) {
@@ -306,9 +314,9 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
 
         }
 
+        return ids;
+
     }
-
-
 
 
     /*
@@ -332,11 +340,11 @@ class ImageDatabaseHelper extends SQLiteOpenHelper {
         cv.put(KEY_VOCAB_SET_ID, vocabKey);
         db.insert(TABLE_VOCAB_SETS, null, cv);
 
-        for (int i = 0; i < tokens.length; i++) {
-            if (tokens[i].equals("")) {
+        for (String token : tokens) {
+            if (token.equals("")) {
                 continue;
             }
-            long currKey = Long.parseLong(tokens[i]);
+            long currKey = Long.parseLong(token);
             ContentValues currCv = new ContentValues();
             currCv.put(KEY_VOCAB_FOREIGN_KEY, vocabKey);
             currCv.put(IMAGE_FOREIGN_KEY, currKey);

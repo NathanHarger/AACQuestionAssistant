@@ -9,8 +9,11 @@ import android.view.View;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,9 +33,20 @@ public class RestoreCardGridActivity extends ImageSelectionActivity {
         finish();
     }
 
+    public void deleteVocabSet(View v) {
+        CardView parent = (CardView) v.getParent().getParent();
+        long setToDelete = adapter.getCardFromCardView(parent);
+        idh.deleteCardSet(setToDelete);
+        adapter.removeItem(setToDelete);
+
+        List<Long> l = new LinkedList<>();
+        l.add(setToDelete);
+        FileOperations.deleteVocabFromGroup(-1L, l, getApplicationContext());
+    }
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.restore_card_layout);
+        setContentView(R.layout.restore_grid_layout);
         rv = findViewById(R.id.restore_grid_layout);
         Parcelable p = null;
         ArrayList al = null;
@@ -58,6 +72,10 @@ public class RestoreCardGridActivity extends ImageSelectionActivity {
         }, rv
         );
 
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(rv.getContext(),
+                DividerItemDecoration.VERTICAL);
+        rv.addItemDecoration(dividerItemDecoration);
 
         if (al != null && p != null) {
             adapter.submitList(al);

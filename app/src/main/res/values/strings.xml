@@ -4,6 +4,7 @@
     <string name="enter_phrase">Enter Phrase</string>
     <string name="item">Item Name</string>
     <string name="no_data_available">No Cards</string>
+    <string name="no_data_sets"> No Card Sets</string>
     <string name="card">Card</string>
     <string name="create_new_word">Create New Word</string>
     <string name="add_card">Add Card</string>
@@ -29,4 +30,5 @@
     <string name="name">Vocab</string>
     <string name="save_grid">Save Vocab Grid</string>
     <string name="restore_grid">Restore Vocab Grid</string>
+    <string name="search_term">Search Term:</string>
 </resources>

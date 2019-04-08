@@ -16,7 +16,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<ImageSelectionRecyclerViewAdapter.CardViewHolder> {
-    protected final CustomItemClickListener listener;
+    private final CustomItemClickListener listener;
     private final RecyclerView rv;
     private final List<Card> cards;
     private final boolean removeEnabled;
