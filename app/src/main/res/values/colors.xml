@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#3FB6C2</color>
     <color name="colorPrimaryDark">#3FB6C2</color>
     <color name="colorAccent">#AF0848</color>
     <color name="cardColor">#e0e0e0</color>
-    <color name="cardColorDark">#707070</color>
+    <color name="cardColorDark" tools:keep="@color/cardColorDark">#707070</color>
     <color name="green">#00FF00</color>
     <color name="red">#FF0000</color>
     <color name="card_outline">#AF0848</color>

@@ -1,6 +1,7 @@
 package com.nathan.harger.aacquestionassistant;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<ImageSelectionRecyclerViewAdapter.CardViewHolder> {
@@ -26,6 +28,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
         this.rv = rv;
         cards = new LinkedList<>();
         this.removeEnabled = removeEnabled;
+
 
     }
 
@@ -61,6 +64,13 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
                 listener.onItemClick(v, cvh.getAdapterPosition());
             }
         });
+
+        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
+        int orientation = v.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 3 : 4;
+
+        lp.width = rv.getMeasuredWidth() / orientation - (orientation * 10);
+        lp.height = lp.width;
+        v.setLayoutParams(lp);
         return cvh;
     }
 

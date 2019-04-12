@@ -1,24 +1,7 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:viewportWidth="850.394"
-    android:viewportHeight="850.394"
-    android:width="850.394dp"
-    android:height="850.394dp">
-    <path
-        android:pathData="M680.66 764.9V336.76H159.72V764.9h-56.18l0.46 -514.22h632l0.83 514.22z"
-        android:fillColor="#9E5C26" />
-    <path
-        android:pathData="M654.75 87.01l88.35 163.67H99.41l95.14 -163.67zM574.16 341.29h47.57v165.37h-47.57zM218.23 341.01h47.57v165.37h-47.57z"
-        android:fillColor="#9E5C26" />
-    <path
-        android:pathData="M104 250.68h-4.59l95.14 -163.67h460.2l88.35 163.67H736z"
-        android:strokeColor="#231F20"
-        android:strokeWidth="21" />
-    <path
-        android:pathData="M736 250v0.68l0.83 514.22h-56.17V336.76H159.72V764.9h-56.18l0.46 -514.22V250"
-        android:strokeColor="#231F20"
-        android:strokeWidth="21" />
-    <path
-        android:pathData="M218.23 341.01h47.57v165.37h-47.57zM574.16 341.29h47.57v165.37h-47.57z"
-        android:strokeColor="#231F20"
-        android:strokeWidth="21" />
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:width="850.394dp" android:height="850.394dp" android:viewportWidth="850.394" android:viewportHeight="850.394" tools:keep="@drawable/table">
+    <path android:fillColor="#9E5C26" android:pathData="M680.66 764.9V336.76H159.72V764.9h-56.18L104 250.68h632l0.83 514.22z"/>
+    <path android:fillColor="#9E5C26" android:pathData="M654.75 87.01l88.35 163.67H99.41l95.14-163.67zm-80.59 254.28h47.57v165.37h-47.57zm-355.93-0.28h47.57v165.37h-47.57z"/>
+    <path android:pathData="M104 250.68h-4.59l95.14-163.67h460.2l88.35 163.67H736z" android:strokeWidth="21" android:strokeColor="#231F20"/>
+    <path android:pathData="M736 250v0.68l0.83 514.22h-56.17V336.76H159.72V764.9h-56.18L104 250.68V250" android:strokeWidth="21" android:strokeColor="#231F20"/>
+    <path android:pathData="M218.23 341.01h47.57v165.37h-47.57zm355.93 0.28h47.57v165.37h-47.57z" android:strokeWidth="21" android:strokeColor="#231F20"/>
 </vector>

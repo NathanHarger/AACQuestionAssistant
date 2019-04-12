@@ -1,24 +1,6 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:viewportWidth="850"
-    android:viewportHeight="850"
-    android:width="850dp"
-    android:height="850dp">
-    <path
-        android:pathData="M591.9 297.5v257.3h-152v-63h64.8V356.3h-64.8v-58.8z"
-        android:fillColor="#A9D7F3" />
-    <path
-        android:pathData="M448.7 423.5v42h-64.8v89l-127.7 0.3V297.5h127.2l0.5 85.8h64.8z"
-        android:fillColor="#A9D7F3" />
-    <path
-        android:pathData="M383.9 554.5v-89h64.8v-82.2h-64.8l-0.5 -85.8H256.2v257.3z"
-        android:strokeColor="#231F20"
-        android:strokeWidth="21"
-        android:strokeLineCap="round"
-        android:strokeMiterLimit="10" />
-    <path
-        android:pathData="M439.9 491.8h64.8V356.3h-64.8v-58.8h152v257.3h-152zM620.4 427h151.3M719.2 378.5l53.5 48.8 -53.5 48.5M228.2 426.8H76.7M129.4 475.3l-53.7 -48.8 53.7 -48.5"
-        android:strokeColor="#231F20"
-        android:strokeWidth="21"
-        android:strokeLineCap="round"
-        android:strokeMiterLimit="10" />
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:width="200dp" android:height="200dp" android:viewportWidth="850.394" android:viewportHeight="850.394" tools:keep="@drawable/separate">
+    <path android:fillColor="#A9D7F3" android:pathData="M591.9 297.5v257.3h-152v-63h64.8V356.3h-64.8v-58.8z"/>
+    <path android:fillColor="#A9D7F3" android:pathData="M448.7 423.5v42h-64.8v89l-127.7 0.3V297.5h127.2l0.5 85.8h64.8z"/>
+    <path android:pathData="M383.9 554.5v-89h64.8v-82.2h-64.8l-0.5-85.8H256.2v257.3z" android:strokeWidth="21" android:strokeColor="#231F20" android:strokeLineCap="round" android:strokeMiterLimit="10"/>
+    <path android:pathData="M439.9 491.8h64.8V356.3h-64.8v-58.8h152v257.3h-152zM620.4 427h151.3m-52.5-48.5l53.5 48.8-53.5 48.5m-491-49H76.7m52.7 48.5l-53.7-48.8 53.7-48.5" android:strokeWidth="21" android:strokeColor="#231F20" android:strokeLineCap="round" android:strokeMiterLimit="10"/>
 </vector>

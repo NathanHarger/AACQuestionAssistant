@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="deleteCustomVocab"
-        android:text="@string/cancel"
+        android:text="@string/cancel_string"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/delete_new_vocab_yes"
         app:layout_constraintHorizontal_bias="0.5"

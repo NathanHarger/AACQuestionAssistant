@@ -1,27 +1,3 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:viewportWidth="850.394"
-    android:viewportHeight="850.394"
-    android:width="850.394dp"
-    android:height="850.394dp">
-    <path
-        android:pathData="M282.772 429.386A113.386 113.386 0 0 1 56 429.386A113.386 113.386 0 0 1 282.772 429.386Z"
-        android:fillColor="#50264B" />
-    <path
-        android:pathData="M779.648 693.386A113.386 113.386 0 0 1 552.876 693.386A113.386 113.386 0 0 1 779.648 693.386Z"
-        android:fillColor="#50264B" />
-    <path
-        android:pathData="M281.647 689.386A113.386 113.386 0 0 1 54.875 689.386A113.386 113.386 0 0 1 281.647 689.386Z"
-        android:fillColor="#50264B" />
-    <path
-        android:pathData="M781.772 167.386A113.386 113.386 0 0 1 555 167.386A113.386 113.386 0 0 1 781.772 167.386Z"
-        android:fillColor="#50264B" />
-    <path
-        android:pathData="M282.772 167.386A113.386 113.386 0 0 1 56 167.386A113.386 113.386 0 0 1 282.772 167.386Z"
-        android:fillColor="#50264B" />
-    <path
-        android:pathData="M779.772 429.386A113.386 113.386 0 0 1 553 429.386A113.386 113.386 0 0 1 779.772 429.386Z"
-        android:fillColor="#50264B" />
-    <path
-        android:pathData="M530.772 437.386A113.386 113.386 0 0 1 304 437.386A113.386 113.386 0 0 1 530.772 437.386Z"
-        android:fillColor="#50264B" />
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:width="850.394dp" android:height="850.394dp" android:viewportWidth="850.394" android:viewportHeight="850.394" tools:keep="@drawable/seven_dots">
+    <path android:fillColor="#50264B" android:pathData="M282.772 429.386a113.386 113.386 0 0 1-226.772 0 113.386 113.386 0 0 1 226.772 0zm496.876 264a113.386 113.386 0 0 1-226.772 0 113.386 113.386 0 0 1 226.772 0zm-498.001-4a113.386 113.386 0 0 1-226.772 0 113.386 113.386 0 0 1 226.772 0zm500.125-522a113.386 113.386 0 0 1-226.772 0 113.386 113.386 0 0 1 226.772 0zm-499 0a113.386 113.386 0 0 1-226.772 0 113.386 113.386 0 0 1 226.772 0zm497 262a113.386 113.386 0 0 1-226.772 0 113.386 113.386 0 0 1 226.772 0zm-249 8a113.386 113.386 0 0 1-226.772 0 113.386 113.386 0 0 1 226.772 0z"/>
 </vector>

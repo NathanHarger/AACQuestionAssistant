@@ -12,9 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="@string/search_term"
+        android:textSize="14sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/editText"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/editText"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -25,7 +26,6 @@
         android:layout_marginEnd="8dp"
         android:ems="10"
         android:hint="@string/item"
-        android:importantForAutofill="no"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="@+id/textView3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,12 +35,16 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/onlineImageSelectionGrid"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText" />
@@ -85,7 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="searchImageNewVocab"
-            android:text="@string/cancel"
+            android:text="@string/cancel_string"
             app:layout_constraintBottom_toTopOf="@+id/search_new_vocab_yes"
             app:layout_constraintEnd_toStartOf="@+id/search_new_vocab_yes"
             app:layout_constraintHorizontal_bias="0.5"

@@ -33,6 +33,7 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/selectImageButton"
         app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+        android:importantForAutofill="no"
         app:layout_constraintStart_toEndOf="@+id/textView5" />
 
     <ImageButton
