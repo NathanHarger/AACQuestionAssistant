@@ -46,10 +46,15 @@ public class ImageSelectionActivity extends AppCompatActivity {
         }
 
         int orientation = rv.getResources().getConfiguration().orientation;
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(rv.getContext(), 1);
+
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            rv.setLayoutManager(new GridLayoutManager(rv.getContext(), 3));
+            gridLayoutManager.setSpanCount(3);
+            rv.setLayoutManager(gridLayoutManager);
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            rv.setLayoutManager(new GridLayoutManager(rv.getContext(), 4));
+            gridLayoutManager.setSpanCount(4);
+
+            rv.setLayoutManager(gridLayoutManager);
         }
 
         idh = ImageDatabaseHelper.getInstance(ImageSelectionActivity.this);

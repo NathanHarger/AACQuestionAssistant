@@ -316,7 +316,7 @@ public class CardRecyclerViewAdapter extends androidx.recyclerview.widget.Recycl
         lp.height = viewGroup.getMeasuredHeight() / orientation - orientation * (viewGroup.getPaddingBottom() + viewGroup.getPaddingTop());
         v.setLayoutParams(lp);
         final CardViewHolder cvh = new CardViewHolder(v);
-        final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+        final GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
 
             public boolean onDown(MotionEvent e) {
 
