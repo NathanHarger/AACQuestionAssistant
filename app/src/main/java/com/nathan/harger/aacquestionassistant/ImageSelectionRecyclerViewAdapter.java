@@ -15,6 +15,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -82,6 +83,7 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
             //v.setLayoutParams(lp);
 
         }
+
         return cvh;
     }
 
