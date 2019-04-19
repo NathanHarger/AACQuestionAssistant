@@ -33,7 +33,23 @@ public class RestoreCardGridActivity extends ImageSelectionActivity {
         finish();
     }
 
+    public void savedSetClick(View v){
+        CardView parent = (CardView) v.getParent();
+
+        long clickedSet = adapter.getCardFromCardView(parent);
+        List<Card> cards = idh.getCardGroup(clickedSet);
+
+        Intent output = new Intent();
+        output.putExtra("new_list", "new_list");
+
+        output.putExtra("list", (Serializable) cards);
+        setResult(Activity.RESULT_OK, output);
+        finish();
+
+    }
+
     public void deleteVocabSet(View v) {
+
         CardView parent = (CardView) v.getParent().getParent();
         long setToDelete = adapter.getCardFromCardView(parent);
         idh.deleteCardSet(setToDelete);

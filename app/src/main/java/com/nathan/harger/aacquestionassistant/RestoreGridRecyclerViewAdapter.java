@@ -131,12 +131,9 @@ public class RestoreGridRecyclerViewAdapter extends RecyclerView.Adapter<Restore
         LinearLayoutManager layoutManager = new LinearLayoutManager(cardViewHolder.row.getContext(), RecyclerView.HORIZONTAL, false);
         cardViewHolder.row.setLayoutManager(layoutManager);
         cardViewHolder.row.setAdapter(adapter);
-        cardViewHolder.row.setHasFixedSize(true);
 
 
-        if (i != -1) {
-            cardViewHolder.x.setVisibility(View.VISIBLE);
-        }
+
 
         adapter.submitList(innerCards);
     }

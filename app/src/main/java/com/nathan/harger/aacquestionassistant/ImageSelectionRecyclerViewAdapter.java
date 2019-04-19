@@ -14,6 +14,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -65,14 +66,26 @@ public class ImageSelectionRecyclerViewAdapter extends RecyclerView.Adapter<Imag
             }
         });
 
-        GridLayoutManager.LayoutParams lp = (GridLayoutManager.LayoutParams) v.getLayoutParams();
+        RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) v.getLayoutParams();
         int orientation = v.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT ? 3 : 4;
+        boolean gridLayout = rv.getLayoutManager().canScrollVertically();
 
-        lp.width = rv.getMeasuredWidth() / orientation - (orientation * 10);
-        lp.height = lp.width;
-        v.setLayoutParams(lp);
+        if(gridLayout) {
+            lp.width = rv.getMeasuredWidth() / orientation - (orientation * 10);
+            lp.height = lp.width;
+            //v.setLayoutParams(lp);
+
+        } else{
+            int height = ((RecyclerView)((CardView)((ConstraintLayout) rv.getParent()).getParent()).getParent()).getMeasuredHeight()/9;
+            lp.height =height;
+            lp.width = lp.height;
+            //v.setLayoutParams(lp);
+
+        }
         return cvh;
     }
+
+
 
     void remove(Card c) {
         List<Card> result = new LinkedList<>();

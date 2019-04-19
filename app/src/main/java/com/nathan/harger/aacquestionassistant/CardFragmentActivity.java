@@ -1,6 +1,5 @@
 package com.nathan.harger.aacquestionassistant;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -122,27 +121,32 @@ public class CardFragmentActivity extends androidx.fragment.app.FragmentActivity
 
     public void pressYesNo(View v) {
         ConstraintLayout cv = ((ConstraintLayout) v.getParent());
-        CardView other;
-        int otherColor;
+        Resources resources = getResources();
 
+
+
+        // YES is clicked
         if (v.getId() == R.id.cv) {
-            other = cv.findViewById(R.id.cv1);
-            otherColor = R.color.red;
+            Drawable d = VectorDrawableCompat.create(resources, R.drawable.yes_outline,getTheme() );
+
+            v.setBackground(d);
+            // reset NO
+            CardView other = cv.findViewById(R.id.cv1);
+            //other.setBackground(n);
+            other.setBackgroundColor(getResources().getColor(R.color.red));
         } else {
-            other = cv.findViewById(R.id.cv);
-            otherColor = R.color.green;
+            Drawable d = VectorDrawableCompat.create(resources, R.drawable.no_outline,getTheme() );
+
+            v.setBackground(d);
+            CardView other = cv.findViewById(R.id.cv);
+            other.setBackgroundColor(getResources().getColor(R.color.green));
+
 
         }
 
 
-        Context c = this.getApplicationContext();
-        Resources r = c.getResources();
-        Resources.Theme theme = c.getTheme();
 
-        Drawable d = VectorDrawableCompat.create(r, R.drawable.outline, theme);
 
-        v.setBackground(d);
-        other.setBackgroundColor(otherColor);
         TextView tv = v.findViewWithTag("name");
         String s = tv.getText().toString();
         TextToSpeechManager.speak(s);
